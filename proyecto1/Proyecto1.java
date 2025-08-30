@@ -1,7 +1,7 @@
 package proyecto1;
 import java.util.Scanner;
 public class Proyecto1 {      
-static Producto[] productos = new Producto[100]; // vector de productos
+static Producto[] productos = new Producto[100]; 
 static int totalProductos = 0;
 public static void main(String[] args) {
 Scanner scanner = new Scanner (System.in);
@@ -76,20 +76,79 @@ int opcion;
                     
                     
                 case 2:
-                    System.out.println("Busca el producto");
+                    System.out.println("-----Buscar producto-----");
+                    System.out.println("Ingresa nombre, categoria o codigo del producto: ");
+                    String criterio = scanner.nextLine().toLowerCase();
+                    
+                    boolean encontrado = false;
+                    for (int i=0; i <totalProductos; i++){
+                        Producto p = productos[i];
+                        if(p.getNombre().toLowerCase().contains(criterio)||
+                           p.getCodigo().toLowerCase().contains(criterio)||
+                           p.getCategoria().toLowerCase().contains(criterio)){
+                        System.out.println(p);
+                        encontrado = true;
+                    }
+                    }
+                    if(!encontrado){
+                        System.out.println("Producto no encontrado");
+                    }
                     break;
+                    
+                                                                          
                 case 3:
-                    System.out.println("Elima producto");
+                    System.out.println("-----Elimar producto-----");
+                    System.out.println("Ingrese el codigo del producto a eliminar: ");
+                    String codigoeliminar = scanner.nextLine();                    
+                    int eliminar = -1;
+                    
+                    
+                    for (int i = 0; i <totalProductos; i++){
+                        if (productos[i].getCodigo().equalsIgnoreCase(codigoeliminar)){
+                            eliminar = i;
+                        break;    
+                        }
+                    }
+                    if (eliminar == -1){
+                        System.out.println("Producto no encontrado con ese codigo");
+                    }else{
+                        System.out.println("Producto encontrado");
+                        System.out.println(productos[eliminar]);
+                        System.out.print("Estas seguro que deseas eliminar el producto, (escribe si/no): ");
+                        String confirmacion = scanner.nextLine();
+                        
+                        if (confirmacion.equalsIgnoreCase("si")){
+                            for (int i = eliminar; i < totalProductos -1; i++){
+                                productos[i] = productos[i+1];
+                            }
+                            
+                            productos[totalProductos -1]= null;
+                            totalProductos--;
+                            
+                        System.out.println("Producto eliminado");
+                        }else{
+                            System.out.println("Eliminacion cancelada");
+                        }
+                    }
                     break;
+                    
                 case 4:
-                    System.out.println("Registramos la venta");
+                    System.out.println("Registro de la venta");
                     break;
                 case 5:
-                    System.out.println("Generamos reportes");
+                    System.out.println("Generar reportes");
                     break;
+                    
+                    
+                
                 case 6:
-                    System.out.println("Ver datos del estudiante");
+                    System.out.println("Alejandro Emmanuel Alvarez Velasquez");
+                    System.out.println("Carnet: 202404224");
+                    System.out.println("Laboratorio IPC  - Seccion: A");
+                    System.out.println("alejandroalvarezv");
                     break;
+                
+                
                 case 7:
                     System.out.println("BITACORA");
                     break;

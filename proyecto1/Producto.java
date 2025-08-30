@@ -21,10 +21,14 @@ public class Producto {
     public String getNombre() {
         return nombre;
     }
+    
+    public String getCategoria(){
+        return categoria;
+    }
 
     @Override
     public String toString() {
-        return "Código: " + codigo +
+        return "Codigo: " + codigo +
                ", Nombre: " + nombre +
                ", Categoría: " + categoria +
                ", Precio: Q" + precio +
