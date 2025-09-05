@@ -34,4 +34,13 @@ public class Producto {
                ", Precio: Q" + precio +
                ", Cantidad: " + cantidad;
     }
+    public int getCantidad(){
+    return cantidad;
 }
+    public void disminuirCantidad(int cantidadVendida){
+        this.cantidad -= cantidadVendida;
+}
+    public double getPrecio(){
+        return precio;
+}
+}    

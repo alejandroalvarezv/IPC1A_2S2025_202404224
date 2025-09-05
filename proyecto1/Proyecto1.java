@@ -132,9 +132,55 @@ int opcion;
                     }
                     break;
                     
+                    
                 case 4:
-                    System.out.println("Registro de la venta");
+                    System.out.println("-----Registro de la venta-----");
+                    System.out.println("Ingrese el codigo del producto: ");
+                    String codigoVenta = scanner.nextLine();
+                    
+                    Producto productoVenta = null;
+                    for(int i=0; i < totalProductos; i++){
+                        if (productos[i].getCodigo().equalsIgnoreCase(codigoVenta)){
+                            productoVenta = productos[i];
+                            break;
+                        }
+                    }
+                    if (productoVenta == null){
+                        System.out.println("Producto no encontrado");
+                        break;
+                    }
+                    
+                    System.out.println("Producto encontrado: " + productoVenta);
+                    System.out.println("Cantidad a vender: ");
+                    int cantidadVenta = scanner.nextInt();
+                    scanner.nextLine();
+                    
+                    if (cantidadVenta <= 0){
+                        System.out.println("La cantidad debe ser mayor a 0");
+                    }else if (cantidadVenta > productoVenta.getCantidad()){
+                        System.out.println("No hay stock disponible");
+                    }else {
+                        productoVenta.disminuirCantidad(cantidadVenta);
+                        double totalVenta = productoVenta.getPrecio() * cantidadVenta;
+                        java.time.LocalDateTime fechaHora = java.time.LocalDateTime.now();
+                        String fechaHoraFormateada = fechaHora.toString().replace("T", " ");
+                        
+                    try {
+                        java.io.FileWriter writer = new java.io.FileWriter("ventas.txt", true);
+                        writer.write("Código: " + productoVenta.getCodigo() +
+                                " | Cantidad: " + cantidadVenta +
+                                " | Fecha y Hora: " + fechaHoraFormateada +
+                                " | Total: Q" + String.format("%.2f", totalVenta) + "\n");
+                        writer.close();
+                        System.out.println("Venta registrada exitosamente");
+                    }catch (java.io.IOException e){
+                        System.out.println("Error al registrar la venta: " + e.getMessage());
+                    }                        
+                    }
                     break;
+                    
+                    
+                    
                 case 5:
                     System.out.println("Generar reportes");
                     break;
