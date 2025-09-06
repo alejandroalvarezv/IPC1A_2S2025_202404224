@@ -3,6 +3,18 @@ import java.util.Scanner;
 public class Proyecto1 {      
 static Producto[] productos = new Producto[100]; 
 static int totalProductos = 0;
+static String usuario = "Alejandro";
+static String[] bitacora = new String[100];
+static int totalRegistrosBitacora = 0;
+public static void registrarBitacora(String tipoAccion, boolean fueCorrecta) {
+    String estado = fueCorrecta ? "Correcta" : "Errónea";
+    String fechaHora = java.time.LocalDateTime.now().toString().replace("T", " ");
+    String registro = "[" + fechaHora + "] Accion: " + tipoAccion + 
+                      " | Estado: " + estado + 
+                      " | Usuario: " + usuario;
+
+    bitacora[totalRegistrosBitacora++] = registro;
+}
 public static void main(String[] args) {
 Scanner scanner = new Scanner (System.in);
 int opcion;
@@ -13,9 +25,9 @@ int opcion;
             System.out.println("2. Buscar producto");
             System.out.println("3. Eliminar producto");
             System.out.println("4. Registrar venta");
-            System.out.println("5. Generar reportes");
-            System.out.println("6. Ver datos del estudiante");
-            System.out.println("7. Bitacora");
+            System.out.println("5. Bitacora");
+            System.out.println("6. Generacion de reportes");
+            System.out.println("7. Datos del estudiante");
             System.out.println("8. Salir");
             System.out.print("Selecciona una opcion: ");
             opcion = scanner.nextInt();
@@ -43,6 +55,8 @@ int opcion;
 
                     if (existe) {
                         System.out.println("El codigo ya existe.\n");
+                        registrarBitacora("Agregar producto", false);
+
                         break;
                     }
 
@@ -71,6 +85,7 @@ int opcion;
                     totalProductos++;
 
                     System.out.println("Producto agregado correctamente.\n");
+                    registrarBitacora("Agregar producto", true);
                     break;
                     
                     
@@ -92,8 +107,10 @@ int opcion;
                     }
                     if(!encontrado){
                         System.out.println("Producto no encontrado");
+                        registrarBitacora("Buscar producto", encontrado);                
                     }
                     break;
+                    
                     
                                                                           
                 case 3:
@@ -111,6 +128,7 @@ int opcion;
                     }
                     if (eliminar == -1){
                         System.out.println("Producto no encontrado con ese codigo");
+                        registrarBitacora("Eliminar producto", false);
                     }else{
                         System.out.println("Producto encontrado");
                         System.out.println(productos[eliminar]);
@@ -126,6 +144,7 @@ int opcion;
                             totalProductos--;
                             
                         System.out.println("Producto eliminado");
+                        registrarBitacora("Eliminar producto", true);
                         }else{
                             System.out.println("Eliminacion cancelada");
                         }
@@ -147,6 +166,7 @@ int opcion;
                     }
                     if (productoVenta == null){
                         System.out.println("Producto no encontrado");
+                        registrarBitacora("Registrar venta", false);
                         break;
                     }
                     
@@ -173,6 +193,7 @@ int opcion;
                                 " | Total: Q" + String.format("%.2f", totalVenta) + "\n");
                         writer.close();
                         System.out.println("Venta registrada exitosamente");
+                        registrarBitacora("Registrar venta", true);
                     }catch (java.io.IOException e){
                         System.out.println("Error al registrar la venta: " + e.getMessage());
                     }                        
@@ -182,22 +203,31 @@ int opcion;
                     
                     
                 case 5:
-                    System.out.println("Generar reportes");
+                    System.out.println("-----Bitacora-----");
+                        if (totalRegistrosBitacora == 0) {
+                            System.out.println("No se han registrado acciones aun.");
+                        } else {
+                            for (int i = 0; i < totalRegistrosBitacora; i++) {
+                                System.out.println(bitacora[i]);
+                            }
+                        }
                     break;
                     
                     
                 
                 case 6:
+                    System.out.println("Generar reportes");
+                    break;
+                
+                
+                case 7:
                     System.out.println("Alejandro Emmanuel Alvarez Velasquez");
                     System.out.println("Carnet: 202404224");
                     System.out.println("Laboratorio IPC  - Seccion: A");
                     System.out.println("alejandroalvarezv");
                     break;
-                
-                
-                case 7:
-                    System.out.println("BITACORA");
-                    break;
+                    
+                    
                 case 8:
                     System.out.println("Salir");
             }
