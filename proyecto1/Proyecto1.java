@@ -216,7 +216,22 @@ int opcion;
                     
                 
                 case 6:
-                    System.out.println("Generar reportes");
+                    System.out.println("-----Generar reportes-----");
+                    System.out.println("1. Reporte de stock");
+                    System.out.println("2. Reporte de ventas");
+                    System.out.println("Seleccione una opcion: ");
+                    int opcionReporte = scanner.nextInt();
+                    scanner.nextLine();
+                    
+                    if (opcionReporte ==1){
+                        Reportes.generarReporteStockPDF(productos, totalProductos);
+                        registrarBitacora("Generar reporte de stock", true);
+                    } else if (opcionReporte ==2){
+                        Reportes.generarReporteVentasPDF();
+                        registrarBitacora("Generar reporte de ventas", true);
+                    } else {
+                        System.out.println("Opcion invalida");
+                    }
                     break;
                 
                 
