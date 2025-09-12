@@ -23,9 +23,9 @@ public class Reportes {
             
             PdfPTable tabla = new PdfPTable(5);
             tabla.setWidthPercentage(100);
-            tabla.addCell("Código");
+            tabla.addCell("Codigo");
             tabla.addCell("Nombre");
-            tabla.addCell("Categoría");
+            tabla.addCell("Categoria");
             tabla.addCell("Precio (Q)");
             tabla.addCell("Cantidad");
             
@@ -50,8 +50,8 @@ public class Reportes {
     public static void generarReporteVentasPDF() {
         try {
             File archivoVentas = new File("ventas.txt");
-            if (!archivoVentas.exists()) {
-                System.out.println("No se encontraron ventas registradas.");
+                if (!archivoVentas.exists()) {
+                    System.out.println("No se encontraron ventas registradas.");
                 return;
             }
 
@@ -74,9 +74,9 @@ public class Reportes {
             tabla.addCell("Total (Q)");
 
             Scanner lector = new Scanner(archivoVentas);
-            while (lector.hasNextLine()) {
-                String linea = lector.nextLine();
-                String[] partes = linea.split("\\|");
+                while (lector.hasNextLine()) {
+                    String linea = lector.nextLine();
+                    String[] partes = linea.split("\\|");
 
                 if (partes.length == 4) {
                     tabla.addCell(partes[0].split(":")[1].trim());

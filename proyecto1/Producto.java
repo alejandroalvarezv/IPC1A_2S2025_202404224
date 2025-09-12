@@ -30,7 +30,7 @@ public class Producto {
     public String toString() {
         return "Codigo: " + codigo +
                ", Nombre: " + nombre +
-               ", Categoría: " + categoria +
+               ", Categoria: " + categoria +
                ", Precio: Q" + precio +
                ", Cantidad: " + cantidad;
     }
