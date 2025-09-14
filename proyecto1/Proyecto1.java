@@ -283,7 +283,7 @@ public static void main(String[] args) {
                     try {
                         opcionReporte = Integer.parseInt(input);
                     }catch (NumberFormatException e) {
-                            System.out.println("Entrada invalida. Por favor, ingresa un número (1 o 2).");
+                            System.out.println("Entrada invalida. Por favor, ingresa un numero (1 o 2).");
                         break;
                     }
                     

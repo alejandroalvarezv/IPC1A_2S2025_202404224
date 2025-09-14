@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 public class Reportes {
     
+    
+    //generacion de reporte de stock
     public static void generarReporteStockPDF(Producto[] productos, int totalProductos){
         try{
             String fechaHora = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd_MM_yyyy_HH_mm_ss"));
@@ -46,7 +48,7 @@ public class Reportes {
     }   
 }
     
-
+    //Generacion de reporte de ventas
     public static void generarReporteVentasPDF() {
         try {
             File archivoVentas = new File("ventas.txt");
