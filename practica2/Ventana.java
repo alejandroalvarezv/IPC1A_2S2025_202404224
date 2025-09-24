@@ -24,6 +24,7 @@ public class Ventana extends JFrame {
         JButton btnModificar = new JButton("Modificar Personaje");
         JButton btnEliminar = new JButton("Eliminar Personaje");
         JButton btnVisualizar = new JButton("Visualizar Personajes");
+        JButton btnBatalla = new JButton("Simular Batalla");
 
         //accion boton agregar
         btnAgregar.addActionListener(e -> {
@@ -75,6 +76,11 @@ public class Ventana extends JFrame {
                 JOptionPane.showMessageDialog(this, scrollPane, "Personajes Registrados", JOptionPane.INFORMATION_MESSAGE);
         });
         
+        //simular batalla
+        btnBatalla.addActionListener(e -> {
+            new SimularBatalla(this).setVisible(true);
+        });
+        
         
         //crear panel y agregar botones
         JPanel panel = new JPanel();
@@ -82,6 +88,7 @@ public class Ventana extends JFrame {
         panel.add(btnModificar);
         panel.add(btnEliminar);
         panel.add(btnVisualizar);
+        panel.add(btnBatalla);
         
         add(panel);
         setVisible(true);
