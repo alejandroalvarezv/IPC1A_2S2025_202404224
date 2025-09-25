@@ -19,8 +19,8 @@ public class VentanaBatalla extends JFrame {
         add(scroll, BorderLayout.CENTER);
 
         // Mostrar inicio
-        appendToBitacora("🗡️ Inicia batalla entre " + p1.getNombre() + " y " + p2.getNombre());
-        appendToBitacora("⏰ Hora: " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
+        appendToBitacora("Inicia batalla entre " + p1.getNombre() + " y " + p2.getNombre());
+        appendToBitacora("Hora: " + new SimpleDateFormat("HH:mm:ss").format(new Date()));
 
         // Lógica de batalla en un hilo nuevo
         new Thread(() -> Batalla.simularBatalla(p1, p2, this)).start();

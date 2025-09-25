@@ -1,5 +1,4 @@
 package practica2;
-
 import javax.swing.*;
 import java.awt.*;
 

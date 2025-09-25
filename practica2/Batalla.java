@@ -1,8 +1,8 @@
 package practica2;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 public class Batalla {
-
-
-    private static boolean batallaFinalizada = false;
+private static boolean batallaFinalizada = false;
 
     public static void simularBatalla(Personaje p1, Personaje p2, VentanaBatalla ventana) {
         batallaFinalizada = false;
@@ -14,10 +14,16 @@ public class Batalla {
         t2.start();
     }
 
-    private static synchronized void ejecutarTurnos(Personaje atacante, Personaje defensor, VentanaBatalla ventana) {
-        while (!batallaFinalizada && defensor.getHp() > 0 && atacante.getHp() > 0) {
-            try {
-                Thread.sleep(1000 / atacante.getVelocidad());
+    private static void ejecutarTurnos(Personaje atacante, Personaje defensor, VentanaBatalla ventana) {
+    while (true) {
+        try {
+            Thread.sleep(1000 / atacante.getVelocidad());
+
+            boolean fin;
+            synchronized (Batalla.class) {
+                if (batallaFinalizada || defensor.getHp() <= 0 || atacante.getHp() <= 0) {
+                    break;
+                }
 
                 boolean esquiva = Math.random() < (defensor.getAgilidad() / 20.0);
                 if (esquiva) {
@@ -34,18 +40,32 @@ public class Batalla {
                 ventana.appendToBitacora(atacante.getNombre() + " ataca a " + defensor.getNombre()
                         + " - Daño: " + daño + " | HP restante: " + Math.max(0, nuevoHP));
 
-                if (nuevoHP <= 0 && !batallaFinalizada) {
+                if (nuevoHP <= 0) {
                     batallaFinalizada = true;
-                    ventana.appendToBitacora("💀 " + defensor.getNombre() + " ha sido derrotado.");
-                    ventana.appendToBitacora("🏆 Ganador: " + atacante.getNombre());
+                    
+                    String fechaActual = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss").format(new Date());
+                    
+                    HistorialBatalla registro = new HistorialBatalla(
+                            Ventana.cantidadBatallas + 1,
+                            fechaActual,
+                            atacante.getNombre(),
+                            defensor.getNombre(),
+                            atacante.getNombre()
+                    );
+                    
+                    Ventana.agregarBatallaHistorial(registro);
 
-                    // Guardar en historial (ya usas un Vector en Ventana)
+                    ventana.appendToBitacora("Resultado: " + defensor.getNombre() + " ha sido derrotado.");
+                    ventana.appendToBitacora("Ganador: " + atacante.getNombre());
                     Ventana.agregarNombreAlHistorial(defensor.getNombre());
                 }
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                
+                
+                
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
+}
 }

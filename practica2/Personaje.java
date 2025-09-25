@@ -1,5 +1,4 @@
 package practica2;
-
 public class Personaje {
     private static int contadorID = 1;
     private int id;

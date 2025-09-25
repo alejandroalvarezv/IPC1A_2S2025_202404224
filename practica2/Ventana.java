@@ -10,6 +10,15 @@ public class Ventana extends JFrame {
     public static final int MAX_HISTORIAL = 100;
     public static String[] historialNombres = new String[MAX_HISTORIAL];
     public static int cantidadHistorial = 0;
+    public static final int MAX_BATALLAS = 100;
+    public static HistorialBatalla[] historialBatallas = new HistorialBatalla[MAX_BATALLAS];
+    public static int cantidadBatallas = 0;
+
+    public static void agregarBatallaHistorial(HistorialBatalla batalla) {
+        if (cantidadBatallas < MAX_BATALLAS) {
+            historialBatallas[cantidadBatallas++] = batalla;
+        }
+    }
     
 
 
@@ -25,6 +34,7 @@ public class Ventana extends JFrame {
         JButton btnEliminar = new JButton("Eliminar Personaje");
         JButton btnVisualizar = new JButton("Visualizar Personajes");
         JButton btnBatalla = new JButton("Simular Batalla");
+        JButton btnHistorial = new JButton("Historial de batallas");
 
         //accion boton agregar
         btnAgregar.addActionListener(e -> {
@@ -82,6 +92,10 @@ public class Ventana extends JFrame {
         });
         
         
+        //Historial de batallas
+        btnHistorial.addActionListener(e -> verHistorialBatallas(this));
+        
+        
         //crear panel y agregar botones
         JPanel panel = new JPanel();
         panel.add(btnAgregar);
@@ -89,6 +103,7 @@ public class Ventana extends JFrame {
         panel.add(btnEliminar);
         panel.add(btnVisualizar);
         panel.add(btnBatalla);
+        panel.add(btnHistorial);
         
         add(panel);
         setVisible(true);
@@ -158,18 +173,42 @@ public class Ventana extends JFrame {
             
             
             public static String obtenerListaPersonajes() {
-                if (cantidadPersonajes == 0) {
-                    return "No hay personajes registrados.";
-            }
                 StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < cantidadPersonajes; i++) {
                         Personaje p = personajes[i];
+                    if (p.getHp() > 0) { // Solo mostrar personajes vivos
                         sb.append(String.format(
-            "ID: %d | Nombre: %s | Arma: %s | HP: %d | Ataque: %d | Defensa: %d | Agilidad: %d | Velocidad: %d%n",
-            p.getId(), p.getNombre(), p.getArma(), p.getHp(), p.getAtaque(), p.getDefensa(), p.getAgilidad(), p.getVelocidad()));
-            }
-                    return sb.toString();
+                "ID: %d | Nombre: %s | Arma: %s | HP: %d | Ataque: %d | Defensa: %d | Agilidad: %d | Velocidad: %d%n",
+                p.getId(), p.getNombre(), p.getArma(), p.getHp(), p.getAtaque(),
+                p.getDefensa(), p.getAgilidad(), p.getVelocidad()));
                 }
+            }
+
+                    if (sb.length() == 0) {
+                return "No hay personajes vivos registrados.";
+            }
+
+                return sb.toString();
+        }       
+            
+            public static void verHistorialBatallas(JFrame parent) {
+                if (cantidadBatallas == 0) {
+                    JOptionPane.showMessageDialog(parent, "No hay batallas registradas.");
+                return;
+            }
+
+            StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < cantidadBatallas; i++) {
+                    sb.append(historialBatallas[i].toString()).append("\n----------------------\n");
+            }
+
+                JTextArea textArea = new JTextArea(sb.toString());
+                textArea.setEditable(false);
+                JScrollPane scrollPane = new JScrollPane(textArea);
+                scrollPane.setPreferredSize(new Dimension(500, 400));
+                JOptionPane.showMessageDialog(parent, scrollPane, "Historial de Batallas", JOptionPane.INFORMATION_MESSAGE);
+            }
+            
 
         
            public static void main(String[] args) {
