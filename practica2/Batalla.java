@@ -34,7 +34,7 @@ private static boolean batallaFinalizada = false;
                 int daño = atacante.getAtaque() - defensor.getDefensa();
                 if (daño < 1) daño = 1;
 
-                int nuevoHP = defensor.getHp() - daño;
+                int nuevoHP = Math.max(defensor.getHp()- daño, 0);
                 defensor.setHp(nuevoHP);
 
                 ventana.appendToBitacora(atacante.getNombre() + " ataca a " + defensor.getNombre()

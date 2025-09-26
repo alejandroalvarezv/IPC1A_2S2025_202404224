@@ -46,4 +46,3 @@ public class Personaje {
     public void setDefensa(int defensa) { this.defensa = defensa; }
     
 }
-

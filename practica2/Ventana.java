@@ -1,6 +1,10 @@
 package practica2;
 import javax.swing.*;
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.io.BufferedReader;
+
 
 public class Ventana extends JFrame {
 
@@ -35,6 +39,9 @@ public class Ventana extends JFrame {
         JButton btnVisualizar = new JButton("Visualizar Personajes");
         JButton btnBatalla = new JButton("Simular Batalla");
         JButton btnHistorial = new JButton("Historial de batallas");
+        JButton btnBuscar = new JButton("Buscar Personaje");
+        JButton btnGuardar = new JButton("Guardar Estado");
+        JButton btnCargar = new JButton("Cargar Estado");
 
         //accion boton agregar
         btnAgregar.addActionListener(e -> {
@@ -95,6 +102,21 @@ public class Ventana extends JFrame {
         //Historial de batallas
         btnHistorial.addActionListener(e -> verHistorialBatallas(this));
         
+        //Buscar personajes
+        btnBuscar.addActionListener(e -> {
+            String nombre = JOptionPane.showInputDialog(this, "Ingrese el nombre del personaje:");
+                if (nombre != null && !nombre.trim().isEmpty()) {
+                    buscarPersonajePorNombre(nombre.trim());
+                } else {
+                    JOptionPane.showMessageDialog(this, "Entrada inválida.");
+                }
+        });
+        
+        
+        btnGuardar.addActionListener(e -> guardarEstadoEnArchivo());
+        btnCargar.addActionListener(e -> cargarEstadoDesdeArchivo());
+
+        
         
         //crear panel y agregar botones
         JPanel panel = new JPanel();
@@ -104,6 +126,9 @@ public class Ventana extends JFrame {
         panel.add(btnVisualizar);
         panel.add(btnBatalla);
         panel.add(btnHistorial);
+        panel.add(btnBuscar);
+        panel.add(btnGuardar);
+        panel.add(btnCargar);
         
         add(panel);
         setVisible(true);
@@ -176,12 +201,12 @@ public class Ventana extends JFrame {
                 StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < cantidadPersonajes; i++) {
                         Personaje p = personajes[i];
-                    if (p.getHp() > 0) { // Solo mostrar personajes vivos
+                        String estado = (p.getHp()>0) ? "Vivo" : "Muerto";
+                                
                         sb.append(String.format(
-                "ID: %d | Nombre: %s | Arma: %s | HP: %d | Ataque: %d | Defensa: %d | Agilidad: %d | Velocidad: %d%n",
-                p.getId(), p.getNombre(), p.getArma(), p.getHp(), p.getAtaque(),
-                p.getDefensa(), p.getAgilidad(), p.getVelocidad()));
-                }
+                        "ID: %d | Nombre: %s | Arma: %s | HP: %d | Ataque: %d | Defensa: %d | Agilidad: %d | Velocidad: %d | Estado: %s%n",
+                        p.getId(), p.getNombre(), p.getArma(), p.getHp(), p.getAtaque(),
+                        p.getDefensa(), p.getAgilidad(), p.getVelocidad(), estado));
             }
 
                     if (sb.length() == 0) {
@@ -209,9 +234,152 @@ public class Ventana extends JFrame {
                 JOptionPane.showMessageDialog(parent, scrollPane, "Historial de Batallas", JOptionPane.INFORMATION_MESSAGE);
             }
             
+            
+            public static void buscarPersonajePorNombre(String nombreBuscado) {
+                boolean encontrado = false;
+                    int totalBatallas = 0;
+                    int ganadas = 0;
+                    int perdidas = 0;
 
-        
+                for (int i = 0; i < cantidadPersonajes; i++) {
+                    Personaje p = personajes[i];
+                if (p.getNombre().equalsIgnoreCase(nombreBuscado)) {
+                    encontrado = true;
+
+            String mensaje = "ID: " + p.getId() + "\n"
+                    + "Nombre: " + p.getNombre() + "\n"
+                    + "Arma: " + p.getArma() + "\n"
+                    + "HP: " + p.getHp() + "\n"
+                    + "Ataque: " + p.getAtaque() + "\n"
+                    + "Defensa: " + p.getDefensa() + "\n"
+                    + "Agilidad: " + p.getAgilidad() + "\n"
+                    + "Velocidad: " + p.getVelocidad() + "\n";
+
+            // Contar batallas ganadas y perdidas
+            for (int j = 0; j < cantidadBatallas; j++) {
+                HistorialBatalla h = historialBatallas[j];
+                if (h.getParticipante1().equalsIgnoreCase(nombreBuscado) || h.getParticipante2().equalsIgnoreCase(nombreBuscado)) {
+                    totalBatallas++;
+                    if (h.getGanador().equalsIgnoreCase(nombreBuscado)) {
+                        ganadas++;
+                    } else {
+                        perdidas++;
+                    }
+                }
+            }
+
+            mensaje += "\nTotal de batallas: " + totalBatallas
+                    + "\nGanadas: " + ganadas
+                    + "\nPerdidas: " + perdidas;
+
+            // Mostrar con JOptionPane (ventana emergente)
+            JOptionPane.showMessageDialog(null, mensaje);
+            break;
+                }
+            }
+
+                    if (!encontrado) {
+                        JOptionPane.showMessageDialog(null, "Personaje no encontrado.");
+                }
+            }
+            
+            
+            public static void guardarEstadoEnArchivo() {
+                try {
+                    String timestamp = new SimpleDateFormat("dd_MM_yyyy_HH_mm_ss").format(new Date());
+                    String fileName = "ArenaUsac-" + timestamp + ".txt";
+                    PrintWriter writer = new PrintWriter(fileName, "UTF-8");
+
+            // Guardar personajes
+                writer.println("--- PERSONAJES ---");
+                    for (int i = 0; i < cantidadPersonajes; i++) {
+                Personaje p = personajes[i];
+                writer.println(String.format("%d;%s;%s;%d;%d;%d;%d;%d", 
+                p.getId(), p.getNombre(), p.getArma(), p.getHp(), 
+                p.getAtaque(), p.getDefensa(), p.getAgilidad(), p.getVelocidad()));
+            }
+
+            // Guardar historial
+                writer.println("\n--- HISTORIAL DE BATALLAS ---");
+                    for (int i = 0; i < cantidadBatallas; i++) {
+                HistorialBatalla h = historialBatallas[i];
+                writer.println(String.format("%d;%s;%s;%s;%s", 
+                h.getNumero(), h.getFecha(), h.getParticipante1(), 
+                h.getParticipante2(), h.getGanador()));
+            }
+
+                writer.close();
+                    JOptionPane.showMessageDialog(null, "Estado guardado en: " + fileName);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Error al guardar: " + e.getMessage());
+            }
+        }
+            
+            
+            
+            public static void cargarEstadoDesdeArchivo() {
+                JFileChooser fileChooser = new JFileChooser();
+                    int seleccion = fileChooser.showOpenDialog(null);
+
+                if (seleccion == JFileChooser.APPROVE_OPTION) {
+                    try {
+                File file = fileChooser.getSelectedFile();
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                String linea;
+                    boolean leyendoPersonajes = false;
+                    boolean leyendoBatallas = false;
+
+                        cantidadPersonajes = 0;
+                        cantidadBatallas = 0;
+
+            while ((linea = reader.readLine()) != null) {
+                if (linea.startsWith("--- PERSONAJES ---")) {
+                    leyendoPersonajes = true;
+                    leyendoBatallas = false;
+                    continue;
+                } else if (linea.startsWith("--- HISTORIAL DE BATALLAS ---")) {
+                    leyendoPersonajes = false;
+                    leyendoBatallas = true;
+                    continue;
+                }
+
+                if (leyendoPersonajes && !linea.isBlank()) {
+                    String[] partes = linea.split(";");
+                    int id = Integer.parseInt(partes[0]);
+                    String nombre = partes[1];
+                    String arma = partes[2];
+                    int hp = Integer.parseInt(partes[3]);
+                    int ataque = Integer.parseInt(partes[4]);
+                    int defensa = Integer.parseInt(partes[5]);
+                    int agilidad = Integer.parseInt(partes[6]);
+                    int velocidad = Integer.parseInt(partes[7]);
+
+                    personajes[cantidadPersonajes++] = new Personaje(id, nombre, arma, hp, ataque, defensa, agilidad, velocidad);
+                } else if (leyendoBatallas && !linea.isBlank()) {
+                    String[] partes = linea.split(";");
+                    int numero = Integer.parseInt(partes[0]);
+                    String fecha = partes[1];
+                    String p1 = partes[2];
+                    String p2 = partes[3];
+                    String ganador = partes[4];
+
+                    historialBatallas[cantidadBatallas++] = new HistorialBatalla(numero, fecha, p1, p2, ganador);
+                }
+            }
+
+            reader.close();
+            JOptionPane.showMessageDialog(null, "Estado cargado desde: " + file.getName());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al cargar: " + e.getMessage());
+        }
+    }
+}
+
+            
+            
+            
+
            public static void main(String[] args) {
-        new Ventana();
+                new Ventana();
         }
            }
