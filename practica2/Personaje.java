@@ -20,6 +20,24 @@ public class Personaje {
         this.agilidad = agilidad;
         this.defensa = defensa;
     }
+    
+    // Constructor alternativo con ID personalizado (usado al cargar desde archivo)
+    public Personaje(int id, String nombre, String arma, int hp, int ataque, int defensa, int agilidad, int velocidad) {
+        this.id = id;
+        this.nombre = nombre.toLowerCase();
+        this.arma = arma;
+        this.hp = hp;
+        this.ataque = ataque;
+        this.defensa = defensa;
+        this.agilidad = agilidad;
+        this.velocidad = velocidad;
+
+    // Asegurarse de que el contador no repita ID
+            if (id >= contadorID) {
+                contadorID = id + 1;
+        }
+    }
+
 
     public String toString() {
         return String.format("ID: %d | Nombre: %s | Arma: %s | HP: %d", id, nombre, arma, hp);

@@ -15,6 +15,15 @@ public class HistorialBatalla {
     }
     
     // Getters para acceder a los atributos BUSCAR PERSONAJES
+    
+    public int getNumero() {
+        return numero;
+    }
+
+    public String getFecha() {
+        return fecha;
+    }
+    
     public String getParticipante1() {
         return participante1;
     }

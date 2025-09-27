@@ -4,6 +4,10 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.io.BufferedReader;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.File;
+import java.io.FileReader;
 
 
 public class Ventana extends JFrame {
@@ -42,6 +46,7 @@ public class Ventana extends JFrame {
         JButton btnBuscar = new JButton("Buscar Personaje");
         JButton btnGuardar = new JButton("Guardar Estado");
         JButton btnCargar = new JButton("Cargar Estado");
+        JButton btnDatosEstudiante = new JButton("Mostrar datos del estudiante");
 
         //accion boton agregar
         btnAgregar.addActionListener(e -> {
@@ -95,7 +100,11 @@ public class Ventana extends JFrame {
         
         //simular batalla
         btnBatalla.addActionListener(e -> {
-            new SimularBatalla(this).setVisible(true);
+            if (cantidadPersonajes ==0){
+                JOptionPane.showMessageDialog(null, "No hay personajes disponibles para realizar la batalla", "ERROR", JOptionPane.ERROR_MESSAGE);
+            }else{
+                new SimularBatalla(this).setVisible(true);
+            }
         });
         
         
@@ -111,6 +120,10 @@ public class Ventana extends JFrame {
                     JOptionPane.showMessageDialog(this, "Entrada inválida.");
                 }
         });
+        
+        //Mostrar datos del estudiante
+        btnDatosEstudiante.addActionListener(e -> verDatosEstudiante());
+
         
         
         btnGuardar.addActionListener(e -> guardarEstadoEnArchivo());
@@ -129,6 +142,7 @@ public class Ventana extends JFrame {
         panel.add(btnBuscar);
         panel.add(btnGuardar);
         panel.add(btnCargar);
+        panel.add(btnDatosEstudiante);
         
         add(panel);
         setVisible(true);
@@ -290,22 +304,22 @@ public class Ventana extends JFrame {
                     String fileName = "ArenaUsac-" + timestamp + ".txt";
                     PrintWriter writer = new PrintWriter(fileName, "UTF-8");
 
-            // Guardar personajes
+            // Guardar personajes en formato separado por ';'
                 writer.println("--- PERSONAJES ---");
                     for (int i = 0; i < cantidadPersonajes; i++) {
                 Personaje p = personajes[i];
-                writer.println(String.format("%d;%s;%s;%d;%d;%d;%d;%d", 
-                p.getId(), p.getNombre(), p.getArma(), p.getHp(), 
-                p.getAtaque(), p.getDefensa(), p.getAgilidad(), p.getVelocidad()));
-            }
+                writer.printf("%d;%s;%s;%d;%d;%d;%d;%d%n",
+                p.getId(), p.getNombre(), p.getArma(), p.getHp(), p.getAtaque(),
+                p.getDefensa(), p.getAgilidad(), p.getVelocidad());
+        }
 
-            // Guardar historial
-                writer.println("\n--- HISTORIAL DE BATALLAS ---");
+            // Guardar batallas en formato separado por ';'
+                writer.println("--- HISTORIAL DE BATALLAS ---");
                     for (int i = 0; i < cantidadBatallas; i++) {
                 HistorialBatalla h = historialBatallas[i];
-                writer.println(String.format("%d;%s;%s;%s;%s", 
-                h.getNumero(), h.getFecha(), h.getParticipante1(), 
-                h.getParticipante2(), h.getGanador()));
+                writer.printf("%d;%s;%s;%s;%s%n",
+                h.getNumero(), h.getFecha(), h.getParticipante1(),
+                h.getParticipante2(), h.getGanador());
             }
 
                 writer.close();
@@ -314,6 +328,8 @@ public class Ventana extends JFrame {
                     JOptionPane.showMessageDialog(null, "Error al guardar: " + e.getMessage());
             }
         }
+      
+
             
             
             
@@ -375,6 +391,17 @@ public class Ventana extends JFrame {
     }
 }
 
+            private void verDatosEstudiante() {
+                String info = "Datos del estudiante:\n"
+                    + "Nombre: Alejandro Emmanuel Alvarez Velasquez\n"
+                    + "Carné: 202404224\n"
+                    + "Curso: LAB IPC\n"
+                    + "Proyecto: Arena USAC\n"
+                    + "Seccion: A\n"
+                    + "Usuario de Github: alejandroalvarezv";
+
+                JOptionPane.showMessageDialog(this, info, "Datos del Estudiante", JOptionPane.INFORMATION_MESSAGE);
+            }
             
             
             
