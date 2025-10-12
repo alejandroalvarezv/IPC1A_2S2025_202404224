@@ -1,8 +1,8 @@
 package proyecto2;
 public class Administrador extends Usuario {
 
-    public Administrador(String codigo, String contrasena, String nombre) {
-        super(codigo, contrasena, nombre);
+    public Administrador(String codigo, String contraseña, String nombre) {
+        super(codigo, contraseña, nombre);
     }
 
     @Override

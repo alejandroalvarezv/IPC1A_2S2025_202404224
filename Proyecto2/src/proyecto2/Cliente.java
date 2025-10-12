@@ -1,8 +1,8 @@
 package proyecto2;
 public class Cliente extends Usuario {
 
-    public Cliente(String codigo, String contrasena, String nombre) {
-        super(codigo, contrasena, nombre);
+    public Cliente(String codigo, String contraseña, String nombre) {
+        super(codigo, contraseña, nombre);
     }
 
     @Override
