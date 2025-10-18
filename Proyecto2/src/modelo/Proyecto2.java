@@ -1,4 +1,4 @@
-package proyecto2;
+package modelo;
 import Ventanas.Login;
 
 public class Proyecto2 {

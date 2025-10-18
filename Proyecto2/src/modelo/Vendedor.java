@@ -1,11 +1,11 @@
-package proyecto2;
+package modelo;
 public class Vendedor extends Usuario {
     private String genero;
     private int ventasConfirmadas;
 
-    public Vendedor(String codigo, String contraseña, String nombre) {
+    public Vendedor(String codigo, String contraseña, String nombre, String genero) {
         super(codigo, contraseña, nombre);
-        this.genero = "No especificado";
+        this.genero = genero;
         this.ventasConfirmadas = 0;
     }
 

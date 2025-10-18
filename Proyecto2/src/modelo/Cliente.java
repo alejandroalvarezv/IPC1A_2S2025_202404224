@@ -1,4 +1,4 @@
-package proyecto2;
+package modelo;
 public class Cliente extends Usuario {
 
     public Cliente(String codigo, String contraseña, String nombre) {

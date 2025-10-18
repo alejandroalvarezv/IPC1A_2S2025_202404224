@@ -1,8 +1,8 @@
 package Ventanas;
 
 import javax.swing.JOptionPane;
-import proyecto2.UsuarioController;
-import proyecto2.Usuario;
+import controlador.UsuarioController;
+import modelo.Usuario;
 
 public class Login extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Login.class.getName());

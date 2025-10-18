@@ -1,4 +1,4 @@
-package proyecto2;
+package modelo;
 public class Administrador extends Usuario {
 
     public Administrador(String codigo, String contraseña, String nombre) {
