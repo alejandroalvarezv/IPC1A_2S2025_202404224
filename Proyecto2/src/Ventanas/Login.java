@@ -123,10 +123,18 @@ public class Login extends javax.swing.JFrame {
     Usuario usuario = UsuarioController.autenticar(codigo, contrasena);
 
     if (usuario != null) {
-        JOptionPane.showMessageDialog(this, "Bienvenido " + usuario.getNombre() + " (" + usuario.getTipo() + ")");
-        
-        // Aquí puedes abrir otra ventana según tipo de usuario
-        // Por ahora solo mostramos el tipo
+        if (usuario.getTipo().equals("Administrador")) {Administrador adminView = new Administrador();
+            adminView.setVisible(true);
+            
+            this.dispose(); 
+            
+        } else if (usuario.getTipo().equals("Vendedor")) {
+            JOptionPane.showMessageDialog(this, "Bienvenido Vendedor: " + usuario.getNombre());
+            this.dispose();
+            
+        } else {
+             JOptionPane.showMessageDialog(this, "Rol de usuario no implementado: " + usuario.getTipo());
+        }
 
     } else {
         JOptionPane.showMessageDialog(this, "Código o contraseña incorrectos", "Error", JOptionPane.ERROR_MESSAGE);
