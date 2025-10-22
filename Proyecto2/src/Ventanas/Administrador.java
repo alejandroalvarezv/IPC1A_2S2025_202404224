@@ -2,8 +2,14 @@ package Ventanas;
 import javax.swing.JOptionPane;
 import controlador.UsuarioController;
 import Ventanas.CrearVendedor;
+import Ventanas.CargaMasivaVendedores;
+import Ventanas.CrearProducto;
 import javax.swing.table.DefaultTableModel;
 import modelo.Vendedor;
+import controlador.ProductoController;
+import modelo.Producto;
+import modelo.Tecnologia;
+import modelo.Alimento;
 
 public class Administrador extends javax.swing.JFrame {
     
@@ -12,6 +18,7 @@ public class Administrador extends javax.swing.JFrame {
     public Administrador() {
         initComponents();
         actualizarTablaVendedores();
+        actualizarTablaProductos();
     }
 
     public void actualizarTablaVendedores() {
@@ -34,6 +41,58 @@ public class Administrador extends javax.swing.JFrame {
     }
     jTable1.setModel(modelo);
 }
+    
+    public void actualizarTablaProductos() {
+        String[] nombresColumnas = {"Código", "Nombre", "Categoría", "Material", "Atributo Específico"};
+        DefaultTableModel modelo = new DefaultTableModel(nombresColumnas, 0);
+
+        Producto[] listaProductos = ProductoController.obtenerProductos();
+
+    if (listaProductos != null) {
+        for (Producto p : listaProductos) {
+            
+            if (p == null) continue; 
+            
+            try {
+                if (p.getCategoria().equals("Tecnología")) {
+                    modelo.addRow(new Object[]{
+                    p.getCodigo(),
+                    p.getNombre(),
+                    p.getCategoria(),
+                    p.getMaterial(),
+                    ((Tecnologia) p).getMesesGarantia() + " meses"
+                });
+            } else if (p.getCategoria().equals("Alimento")) {
+                modelo.addRow(new Object[]{
+                    p.getCodigo(),
+                    p.getNombre(),
+                    p.getCategoria(),
+                    p.getMaterial(),
+                    ((Alimento) p).getFechaCaducidad() 
+                });
+            } else { 
+                modelo.addRow(new Object[]{
+                    p.getCodigo(),
+                    p.getNombre(),
+                    p.getCategoria(),
+                    p.getMaterial(),
+                    "N/A"
+                });
+            }
+        }catch (ClassCastException e) {
+            logger.warning("Error de casting para el producto con código: " + p.getCodigo() + ". Se cargará como Producto General.");
+                modelo.addRow(new Object[]{
+                    p.getCodigo(),
+                    p.getNombre(),
+                    p.getCategoria(),
+                    p.getMaterial(),
+                    "Error de Carga"
+        });
+            }
+        }
+    }
+    jTable2.setModel(modelo); 
+}
 
     @SuppressWarnings("unchecked")
                           
@@ -49,6 +108,12 @@ public class Administrador extends javax.swing.JFrame {
         jButton2 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTable2 = new javax.swing.JTable();
+        jButton5 = new javax.swing.JButton();
+        jButton6 = new javax.swing.JButton();
+        jButton7 = new javax.swing.JButton();
+        jButton8 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -109,13 +174,13 @@ public class Administrador extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(151, Short.MAX_VALUE))
+                .addContainerGap(103, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tablaVendedores, javax.swing.GroupLayout.DEFAULT_SIZE, 340, Short.MAX_VALUE))
+                .addComponent(tablaVendedores, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(83, 83, 83)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -130,15 +195,62 @@ public class Administrador extends javax.swing.JFrame {
 
         jTabbedPaneModulos.addTab("Vendedores", jPanel1);
 
+        jTable2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Código", "Nombre", "Categoría", "Acciones"
+            }
+        ));
+        jScrollPane1.setViewportView(jTable2);
+
+        jButton5.setText("Crear");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jButton6.setText("Actualizar");
+
+        jButton7.setText("Eliminar");
+
+        jButton8.setText("Cargar");
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 904, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 638, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 73, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
+                        .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(45, 45, 45))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 346, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(98, 98, 98)
+                .addComponent(jButton5)
+                .addGap(51, 51, 51)
+                .addComponent(jButton6)
+                .addGap(42, 42, 42)
+                .addComponent(jButton7)
+                .addGap(53, 53, 53)
+                .addComponent(jButton8)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         jTabbedPaneModulos.addTab("Productos", jPanel2);
@@ -147,11 +259,11 @@ public class Administrador extends javax.swing.JFrame {
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 904, Short.MAX_VALUE)
+            .addGap(0, 856, Short.MAX_VALUE)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 346, Short.MAX_VALUE)
+            .addGap(0, 439, Short.MAX_VALUE)
         );
 
         jTabbedPaneModulos.addTab("Reportes", jPanel3);
@@ -162,7 +274,7 @@ public class Administrador extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(21, 21, 21)
-                .addComponent(jTabbedPaneModulos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jTabbedPaneModulos, javax.swing.GroupLayout.PREFERRED_SIZE, 856, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -170,14 +282,15 @@ public class Administrador extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(27, 27, 27)
                 .addComponent(jTabbedPaneModulos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        CargaMasivaVendedores CargaMasivaVendedoresWindow = new CargaMasivaVendedores(this);
+        CargaMasivaVendedoresWindow.setVisible(true);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -194,6 +307,11 @@ public class Administrador extends javax.swing.JFrame {
         ActualizarVendedor ActualizarVendedorWindow = new ActualizarVendedor(this);
         ActualizarVendedorWindow.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        CrearProducto crearProductoWindow = new CrearProducto(this); 
+    crearProductoWindow.setVisible(true);    
+    }//GEN-LAST:event_jButton5ActionPerformed
 
 
     public static void main(String args[]) {
@@ -222,11 +340,17 @@ public class Administrador extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
+    private javax.swing.JButton jButton8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPaneModulos;
     private javax.swing.JTable jTable1;
+    private javax.swing.JTable jTable2;
     private javax.swing.JScrollPane tablaVendedores;
     // End of variables declaration//GEN-END:variables
 }

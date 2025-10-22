@@ -70,6 +70,51 @@ public class UsuarioController {
             }
         }
     }
+    
+        public static void cargarVendedoresMasivo(String rutaArchivo) {
+            try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
+                br.readLine(); 
+                String linea;
+        
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",");
+
+            if (datos.length != 5) {
+                System.out.println("Error de formato (esperaba 4 campos): " + linea);
+                continue;
+            }
+
+            String codigo = datos[0].trim();
+            String contraseña = datos[1].trim();
+            String nombre = datos[2].trim();
+            String genero = datos[3].trim();
+            
+            // **Validación de datos vacíos**
+            if (codigo.isEmpty() || nombre.isEmpty() || contraseña.isEmpty() || genero.isEmpty()) {
+                System.out.println("Error de datos incompletos: " + linea);
+                continue;
+            }
+
+            // Crear el objeto Vendedor
+            Vendedor nuevoVendedor = new Vendedor(codigo, contraseña, nombre, genero);
+            
+            // **Validación de unicidad de código (maneja duplicados)**
+            if (agregarUsuario(nuevoVendedor)) {
+                System.out.println("Vendedor cargado: " + codigo);
+            } else {
+                System.out.println("Advertencia: Vendedor con código " + codigo + " ya existe. No cargado.");
+            }
+        }
+        
+        // **Persistencia: Guardar la lista actualizada al archivo principal (usuarios.csv)**
+        guardarUsuarios(); 
+        
+    } catch (FileNotFoundException e) {
+        System.out.println("Error: Archivo de carga masiva no encontrado en la ruta: " + rutaArchivo);
+    } catch (IOException e) {
+        System.out.println("Error de lectura o escritura: " + e.getMessage());
+    }
+}
 
     public static Usuario autenticar(String codigo, String contraseña) {
         for (int i = 0; i < contadorUsuarios; i++) {

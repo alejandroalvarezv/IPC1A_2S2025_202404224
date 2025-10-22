@@ -9,9 +9,6 @@ public class EliminarVendedor extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EliminarVendedor.class.getName());
     
     private Administrador adminView; 
-    private javax.swing.JTextField CodigoEliminar;
-    private javax.swing.JButton EliminarButton;
-    private javax.swing.JButton CancelarButton;
     
     public EliminarVendedor() {
         initComponents();
@@ -104,7 +101,7 @@ public class EliminarVendedor extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // 1. Obtener y Validar el código de entrada
-    String codigo = CodigoEliminar.getText().trim();
+    String codigo = jTextField1.getText().trim();
     
         if (codigo.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Debe ingresar el código del vendedor a eliminar.", "Validación", JOptionPane.WARNING_MESSAGE);
