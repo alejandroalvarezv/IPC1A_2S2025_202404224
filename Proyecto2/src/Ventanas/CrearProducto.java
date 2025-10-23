@@ -152,7 +152,7 @@ public class CrearProducto extends javax.swing.JFrame {
             atributoUnicoLabel.setText("Meses Garantía:");
         } else if (categoria.equals("Alimento")) {
             atributoUnicoLabel.setText("Fecha Caducidad:");
-        } else if (categoria.equals("Generales")) { // Si seleccionan generales, usamos "Material"
+        } else if (categoria.equals("Generales")) { 
             atributoUnicoLabel.setText("Material:"); 
         } else {
             atributoUnicoLabel.setText("Atributo Único:");
@@ -173,7 +173,6 @@ public class CrearProducto extends javax.swing.JFrame {
     String categoria = (String) jComboBox1.getSelectedItem();
     String atributoEspecifico = jTextField3.getText().trim();
 
-    // 1. Validar selección de categoría y campos vacíos
     if (codigo.isEmpty() || nombre.isEmpty() || categoria.equals("Seleccione") || atributoEspecifico.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Debe seleccionar una categoría y completar todos los campos.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
         return;
@@ -181,7 +180,6 @@ public class CrearProducto extends javax.swing.JFrame {
 
     Producto nuevoProducto = null;
 
-    // 2. CREACIÓN DEL OBJETO PRODUCTO ESPECIALIZADO
     if (categoria.equals("Generales")) {
         String material = atributoEspecifico;
         nuevoProducto = new Producto(codigo, nombre, categoria, material);
@@ -189,27 +187,22 @@ public class CrearProducto extends javax.swing.JFrame {
     } else if (categoria.equals("Tecnología")) {
         try {
             int garantia = Integer.parseInt(atributoEspecifico);
-            // El tercer parámetro es el material o tipo, lo dejamos como "Técnico" por ahora
             nuevoProducto = new Tecnologia(codigo, nombre, "Técnico", garantia);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "La garantía debe ser un número entero.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
-            // IMPORTANTE: Se registra el error usando el logger que definiste
             logger.log(Level.WARNING, "Error al convertir garantía a número.", e);
             return;
         }
 
     } else if (categoria.equals("Alimento")) {
         String fechaCaducidad = atributoEspecifico;
-        // El tercer parámetro es el material o tipo, lo dejamos como "Orgánico" por ahora
         nuevoProducto = new Alimento(codigo, nombre, "Orgánico", fechaCaducidad);
     }
 
-    // 3. AÑADIR AL CONTROLADOR, GUARDAR Y ACTUALIZAR VISTA
     if (nuevoProducto != null) {
         if (ProductoController.agregarProducto(nuevoProducto)) {
             ProductoController.guardarProductos(); // Persistir los cambios
 
-            // LLAMADA CLAVE: Verificar que la ventana Administrador exista antes de usarla
             if (adminView != null) {
                 adminView.actualizarTablaProductos(); 
             }
@@ -217,7 +210,6 @@ public class CrearProducto extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Producto creado exitosamente: " + nombre, "Éxito", JOptionPane.INFORMATION_MESSAGE);
             this.dispose();
         } else {
-            // Este es el error de código único que viene del controlador
             JOptionPane.showMessageDialog(this, "Error: El código de producto ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }

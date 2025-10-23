@@ -128,8 +128,8 @@ public class Login extends javax.swing.JFrame {
             
             this.dispose(); 
             
-        } else if (usuario.getTipo().equals("Vendedor")) {
-            JOptionPane.showMessageDialog(this, "Bienvenido Vendedor: " + usuario.getNombre());
+        } else if (usuario.getTipo().equals("Vendedor")) {VentanaVendedor adminView = new VentanaVendedor();
+            adminView.setVisible(true);
             this.dispose();
             
         } else {

@@ -18,6 +18,8 @@ public class CargaMasivaVendedores extends javax.swing.JFrame {
     
     public CargaMasivaVendedores() {
         initComponents();
+        jTextField1.setEditable(false); 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     }
     
 
@@ -31,6 +33,12 @@ public class CargaMasivaVendedores extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
+            }
+        });
 
         jButton1.setText("Seleccionar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -90,21 +98,18 @@ public class CargaMasivaVendedores extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         JFileChooser fileChooser = new JFileChooser();
     
-    // Opcional: Filtra para mostrar solo archivos CSV
     FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos CSV", "csv");
     fileChooser.setFileFilter(filter);
     
     int returnValue = fileChooser.showOpenDialog(this);
     
     if (returnValue == JFileChooser.APPROVE_OPTION) {
-        // Asigna la ruta absoluta del archivo seleccionado al campo de texto
         File selectedFile = fileChooser.getSelectedFile();
         jTextField1.setText(selectedFile.getAbsolutePath());
     }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // OBTENEMOS LA RUTA DESDE jTextField1
     String ruta = jTextField1.getText().trim(); 
     
     if (ruta.isEmpty()) {
@@ -112,14 +117,11 @@ public class CargaMasivaVendedores extends javax.swing.JFrame {
         return;
     }
     
-    // Llamar al método del controlador que implementaste en el paso anterior
     UsuarioController.cargarVendedoresMasivo(ruta);
     
     JOptionPane.showMessageDialog(this, "Proceso de carga masiva finalizado. Revise la consola para detalles de duplicados o errores de formato.", "Carga Terminada", JOptionPane.INFORMATION_MESSAGE);
     
-    // Refrescar la tabla del Administrador (si la referencia 'adminView' está disponible)
     if (adminView != null) { 
-        adminView.actualizarTablaVendedores(); 
     }
     
     this.dispose(); 
@@ -129,6 +131,10 @@ public class CargaMasivaVendedores extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
 
     /**
      * @param args the command line arguments

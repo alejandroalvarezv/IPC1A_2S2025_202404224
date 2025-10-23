@@ -1,99 +1,129 @@
 package Ventanas;
-import javax.swing.JOptionPane;
 import controlador.UsuarioController;
-import Ventanas.CrearVendedor;
-import Ventanas.CargaMasivaVendedores;
-import Ventanas.CrearProducto;
+import controlador.ProductoController;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.Vendedor;
-import controlador.ProductoController;
 import modelo.Producto;
 import modelo.Tecnologia;
 import modelo.Alimento;
+import modelo.ButtonColumn;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class Administrador extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Administrador.class.getName());
+
+    private static final Logger logger = Logger.getLogger(Administrador.class.getName());
 
     public Administrador() {
-        initComponents();
+        initComponents(); 
+        this.setTitle("Módulo de Administración");
+        this.setLocationRelativeTo(null);
+        refreshAdminView();
+    }
+
+    public void refreshAdminView() {
         actualizarTablaVendedores();
         actualizarTablaProductos();
     }
 
     public void actualizarTablaVendedores() {
-    String[] nombresColumnas = {"Código", "Nombre", "Género", "Ventas"};
-    DefaultTableModel modelo = new DefaultTableModel(nombresColumnas, 0);
+        UsuarioController.cargarUsuarios();
+        String[] nombresColumnas = {"Código", "Nombre", "Género", "Ventas"};
+        DefaultTableModel modelo = new DefaultTableModel(nombresColumnas, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
 
-    Vendedor[] listaVendedores = UsuarioController.obtenerVendedores(); 
+        Vendedor[] listaVendedores = UsuarioController.obtenerVendedores();
 
-    if (listaVendedores != null) {
-        for (Vendedor v : listaVendedores) {
-            if (v != null) { 
-                modelo.addRow(new Object[]{
-                    v.getCodigo(), 
-                    v.getNombre(), 
-                    v.getGenero(), 
-                    v.getVentasConfirmadas() 
-                });
+        if (listaVendedores != null) {
+            for (Vendedor v : listaVendedores) {
+                if (v != null) {
+                    modelo.addRow(new Object[]{
+                        v.getCodigo(),
+                        v.getNombre(),
+                        v.getGenero(),
+                        v.getVentasConfirmadas()
+                    });
+                }
             }
         }
+        jTable1.setModel(modelo);
     }
-    jTable1.setModel(modelo);
-}
+
     
     public void actualizarTablaProductos() {
-        String[] nombresColumnas = {"Código", "Nombre", "Categoría", "Material", "Atributo Específico"};
-        DefaultTableModel modelo = new DefaultTableModel(nombresColumnas, 0);
+        ProductoController.cargarProductos();
+        
+        String[] nombresColumnas = {"Código", "Nombre", "Categoría", "Ver Detalle"};
+        DefaultTableModel modelo = new DefaultTableModel(nombresColumnas, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 3;
+            }
+        };
 
         Producto[] listaProductos = ProductoController.obtenerProductos();
 
-    if (listaProductos != null) {
-        for (Producto p : listaProductos) {
-            
-            if (p == null) continue; 
-            
-            try {
-                if (p.getCategoria().equals("Tecnología")) {
-                    modelo.addRow(new Object[]{
-                    p.getCodigo(),
-                    p.getNombre(),
-                    p.getCategoria(),
-                    p.getMaterial(),
-                    ((Tecnologia) p).getMesesGarantia() + " meses"
-                });
-            } else if (p.getCategoria().equals("Alimento")) {
+        if (listaProductos != null) {
+            for (Producto p : listaProductos) {
+                if (p == null) continue;
+
+                String categoria;
+                if (p instanceof Tecnologia) {
+                    categoria = "Tecnología";
+                } else if (p instanceof Alimento) {
+                    categoria = "Alimento";
+                } else {
+                    categoria = "General";
+                }
+
                 modelo.addRow(new Object[]{
                     p.getCodigo(),
                     p.getNombre(),
-                    p.getCategoria(),
-                    p.getMaterial(),
-                    ((Alimento) p).getFechaCaducidad() 
-                });
-            } else { 
-                modelo.addRow(new Object[]{
-                    p.getCodigo(),
-                    p.getNombre(),
-                    p.getCategoria(),
-                    p.getMaterial(),
-                    "N/A"
+                    categoria,
+                    "Ver Detalle"
                 });
             }
-        }catch (ClassCastException e) {
-            logger.warning("Error de casting para el producto con código: " + p.getCodigo() + ". Se cargará como Producto General.");
-                modelo.addRow(new Object[]{
-                    p.getCodigo(),
-                    p.getNombre(),
-                    p.getCategoria(),
-                    p.getMaterial(),
-                    "Error de Carga"
+        }
+
+        jTable2.setModel(modelo);
+
+        new ButtonColumn(jTable2, 3, e -> {
+            int row = Integer.parseInt(e.getActionCommand());
+            String codigo = jTable2.getValueAt(row, 0).toString();
+
+            Producto producto = ProductoController.buscarProductoPorCodigo(codigo);
+
+            if (producto != null) {
+                String detalle = obtenerDetalleProducto(producto);
+                JOptionPane.showMessageDialog(this, detalle, 
+                        "Detalles del Producto", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, 
+                        "No se encontró el producto.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
-            }
-        }
-    }
-    jTable2.setModel(modelo); 
+    }
+
+
+    private String obtenerDetalleProducto(Producto producto) {
+    if (producto instanceof Tecnologia) {
+        Tecnologia t = (Tecnologia) producto;
+        return "Categoría: Tecnología\nGarantía: " + t.getMesesGarantia() + " meses";
+    } else if (producto instanceof Alimento) {
+        Alimento a = (Alimento) producto;
+        return "Categoría: Alimento\nFecha de caducidad: " + a.getFechaCaducidad();
+    } else {
+        return "Categoría: General\nMaterial: " + producto.getMaterial();
+    }
 }
 
+
+    
     @SuppressWarnings("unchecked")
                           
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -165,8 +195,8 @@ public class Administrador extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tablaVendedores, javax.swing.GroupLayout.PREFERRED_SIZE, 432, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(60, 60, 60)
+                .addComponent(tablaVendedores, javax.swing.GroupLayout.PREFERRED_SIZE, 433, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(59, 59, 59)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -197,13 +227,13 @@ public class Administrador extends javax.swing.JFrame {
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Código", "Nombre", "Categoría", "Acciones"
+                "Código", "Nombre", "Categoría", "Stock", "Ver Detalles"
             }
         ));
         jScrollPane1.setViewportView(jTable2);
@@ -216,10 +246,25 @@ public class Administrador extends javax.swing.JFrame {
         });
 
         jButton6.setText("Actualizar");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         jButton7.setText("Eliminar");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         jButton8.setText("Cargar");
+        jButton8.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton8ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -310,8 +355,23 @@ public class Administrador extends javax.swing.JFrame {
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         CrearProducto crearProductoWindow = new CrearProducto(this); 
-    crearProductoWindow.setVisible(true);    
+        crearProductoWindow.setVisible(true);    
     }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        ActualizarProducto actualizarProductoWindow = new ActualizarProducto(this);
+        actualizarProductoWindow.setVisible(true);
+    }//GEN-LAST:event_jButton6ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        EliminarProducto eliminarProductoWindow = new EliminarProducto(this);
+        eliminarProductoWindow.setVisible(true);
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
+        CargaMasivaProductos CargaMasivaProductosWindow = new CargaMasivaProductos(this);
+        CargaMasivaProductosWindow.setVisible(true);
+    }//GEN-LAST:event_jButton8ActionPerformed
 
 
     public static void main(String args[]) {

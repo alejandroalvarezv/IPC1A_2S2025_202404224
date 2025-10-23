@@ -14,7 +14,7 @@ public class EliminarVendedor extends javax.swing.JFrame {
         initComponents();
     }
 
-    public EliminarVendedor(Administrador adminView) { // <-- ESTE ES EL CONSTRUCTOR CLAVE
+    public EliminarVendedor(Administrador adminView) { 
         this(); 
         this.adminView = adminView;
         this.setLocationRelativeTo(adminView);
@@ -100,7 +100,6 @@ public class EliminarVendedor extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // 1. Obtener y Validar el código de entrada
     String codigo = jTextField1.getText().trim();
     
         if (codigo.isEmpty()) {
@@ -127,7 +126,6 @@ public class EliminarVendedor extends javax.swing.JFrame {
     
     if (confirmacion == JOptionPane.YES_OPTION) {
         
-        // 5. Eliminar el usuario de la lista
         boolean eliminado = UsuarioController.eliminarUsuarioPorCodigo(codigo);
         
         if (eliminado) {
@@ -139,7 +137,7 @@ public class EliminarVendedor extends javax.swing.JFrame {
             }
             
             JOptionPane.showMessageDialog(this, "Vendedor " + codigo + " eliminado exitosamente.");
-            this.dispose(); // Cerrar la ventana después de la eliminación
+            this.dispose();
         } else {
              JOptionPane.showMessageDialog(this, "Error al procesar la eliminación en la lista.", "Error Interno", JOptionPane.ERROR_MESSAGE);
         }

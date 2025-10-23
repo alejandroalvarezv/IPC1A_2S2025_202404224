@@ -8,11 +8,15 @@ public class Vendedor extends Usuario {
         this.ventasConfirmadas = 0;
     }
 
+    public Vendedor(String codigo, String nombre) {
+        super(codigo, "1234", nombre, "Otro", "Vendedor");
+        this.ventasConfirmadas = 0;
+    }
+
     public void aumentarVentas() {
         ventasConfirmadas++;
     }
 
-    // Getter 
     public int getVentasConfirmadas() {
         return ventasConfirmadas;
     }

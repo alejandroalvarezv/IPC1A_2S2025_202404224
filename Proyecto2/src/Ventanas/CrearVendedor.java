@@ -11,17 +11,15 @@ public class CrearVendedor extends javax.swing.JFrame {
     
     public CrearVendedor(Administrador adminView) {
         initComponents();
-        this.adminView = adminView; // Guarda la referencia
+        this.adminView = adminView;
         this.setLocationRelativeTo(adminView);
             jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Masculino", "Femenino", "Otro" }));
     }
     
     public CrearVendedor() {
         initComponents();
-        this.adminView = null; // No hay vista padre
+        this.adminView = null; 
         this.setLocationRelativeTo(null);
-        // Configuración inicial del ComboBox
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Masculino", "Femenino", "Otro" }));
     }
 
     @SuppressWarnings("unchecked")
@@ -165,23 +163,26 @@ public class CrearVendedor extends javax.swing.JFrame {
         String contrasena = jTextField3.getText().trim(); 
         String genero = (String) jComboBox1.getSelectedItem();
 
-            if (codigo.isEmpty() || nombre.isEmpty() || contrasena.isEmpty() || genero == null || genero.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Debe llenar todos los campos.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
+        if (codigo.isEmpty() || nombre.isEmpty() || contrasena.isEmpty() || genero == null || genero.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe llenar todos los campos.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
             return;
-    }
-
-    boolean creado = UsuarioController.crearVendedor(codigo, nombre, genero, contrasena);
-
-    if (creado) {
-        UsuarioController.guardarUsuarios(); // Guardar persistencia
-        JOptionPane.showMessageDialog(this, "Vendedor " + nombre + " creado exitosamente.");
-        
-        this.adminView.actualizarTablaVendedores(); 
-        
-        this.dispose(); 
-    } else {
-        JOptionPane.showMessageDialog(this, "Error: El código " + codigo + " ya existe en el sistema.", "Error de Creación", JOptionPane.ERROR_MESSAGE);
         }
+
+        boolean creado = UsuarioController.crearVendedor(codigo, nombre, genero, contrasena);
+
+        if (creado) {
+            UsuarioController.guardarUsuarios(); 
+            JOptionPane.showMessageDialog(this, "Vendedor " + nombre + " creado exitosamente.");
+            
+            if (adminView != null) {
+                adminView.actualizarTablaVendedores(); 
+            }
+            
+            this.dispose(); 
+        } else {
+            JOptionPane.showMessageDialog(this, "Error: El código " + codigo + " ya existe en el sistema.", "Error de Creación", JOptionPane.ERROR_MESSAGE);
+        }
+    
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed

@@ -23,13 +23,12 @@ public class UsuarioController {
         return false;
     }
     
-    // Cargar usuarios desde CSV
     public static void cargarUsuarios() {
         if (contadorUsuarios == 0) {
             String rutaArchivo = "data/usuarios.csv";
 
             try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
-                br.readLine(); // Saltar la cabecera
+                br.readLine();
                 String linea;
                 
                 while ((linea = br.readLine()) != null) {
@@ -89,16 +88,14 @@ public class UsuarioController {
             String nombre = datos[2].trim();
             String genero = datos[3].trim();
             
-            // **Validación de datos vacíos**
+
             if (codigo.isEmpty() || nombre.isEmpty() || contraseña.isEmpty() || genero.isEmpty()) {
                 System.out.println("Error de datos incompletos: " + linea);
                 continue;
             }
 
-            // Crear el objeto Vendedor
             Vendedor nuevoVendedor = new Vendedor(codigo, contraseña, nombre, genero);
             
-            // **Validación de unicidad de código (maneja duplicados)**
             if (agregarUsuario(nuevoVendedor)) {
                 System.out.println("Vendedor cargado: " + codigo);
             } else {
@@ -106,7 +103,6 @@ public class UsuarioController {
             }
         }
         
-        // **Persistencia: Guardar la lista actualizada al archivo principal (usuarios.csv)**
         guardarUsuarios(); 
         
     } catch (FileNotFoundException e) {
@@ -140,8 +136,8 @@ public class UsuarioController {
             for (int i = indiceAEliminar; i < contadorUsuarios - 1; i++) {
                 usuarios[i] = usuarios[i + 1];
         }
-                usuarios[contadorUsuarios - 1] = null; // Limpiar la última posición duplicada
-                contadorUsuarios--; // Decrementar el contador
+                usuarios[contadorUsuarios - 1] = null; 
+                contadorUsuarios--;
             return true;
         }
             return false;
@@ -187,9 +183,8 @@ public class UsuarioController {
 
     public static boolean crearVendedor(String codigo, String nombre, String genero, String contraseña) {
         if (buscarUsuarioPorCodigo(codigo) != null) {
-            return false; // ya existe un usuario con ese código
+            return false; 
         }
-        // CORRECCIÓN C: Orden de parámetros en el constructor (cod, cont, nom, gen)
         Vendedor nuevoVendedor = new Vendedor(codigo, contraseña, nombre, genero); 
         return agregarUsuario(nuevoVendedor);
     }

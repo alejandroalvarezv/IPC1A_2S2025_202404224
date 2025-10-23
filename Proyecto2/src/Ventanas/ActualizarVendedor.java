@@ -3,6 +3,7 @@ import controlador.UsuarioController;
 import modelo.Vendedor;
 import javax.swing.JOptionPane;
 import modelo.Usuario;
+
 public class ActualizarVendedor extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ActualizarVendedor.class.getName());
@@ -21,10 +22,7 @@ public class ActualizarVendedor extends javax.swing.JFrame {
         this.adminView = adminView;
         this.setLocationRelativeTo(adminView);
     }
-    // -------------------------------------------------------------------------
-    // LÓGICA DE CONTROL (Métodos Auxiliares)
-    // -------------------------------------------------------------------------
-
+    
     private void establecerEstadoCampos(boolean habilitado) {
         Nombre.setEditable(habilitado);
         Contrasena.setEditable(habilitado);
@@ -155,7 +153,6 @@ public class ActualizarVendedor extends javax.swing.JFrame {
         return;
     }
 
-    // 2. Obtener y Validar Nuevos Valores
     String nuevoNombre = Nombre.getText().trim();
     String nuevaContrasena = Contrasena.getText().trim(); 
 
@@ -164,21 +161,18 @@ public class ActualizarVendedor extends javax.swing.JFrame {
         return;
     }
     
-    // 3. Actualizar el objeto Vendedor en memoria
     vendedorAEditar.setNombre(nuevoNombre);
     vendedorAEditar.setContrasena(nuevaContrasena);
     
-    // 4. Persistir los cambios (Guardar toda la lista al CSV)
     UsuarioController.guardarUsuarios();
     
-    // 5. Notificar a la ventana principal para refrescar la tabla
     if (adminView != null) {
-        adminView.actualizarTablaVendedores();
-    }
-    
-    JOptionPane.showMessageDialog(this, "Vendedor " + vendedorAEditar.getCodigo() + " actualizado exitosamente.");
-    
-    this.dispose(); 
+    adminView.actualizarTablaVendedores();
+}
+
+JOptionPane.showMessageDialog(this, "Vendedor " + vendedorAEditar.getCodigo() + " actualizado exitosamente.");
+
+this.dispose();
 
     }//GEN-LAST:event_ActualizarActionPerformed
 
@@ -198,10 +192,8 @@ public class ActualizarVendedor extends javax.swing.JFrame {
         return;
     }
 
-    // 1. Buscar el usuario
     Usuario u = UsuarioController.buscarUsuarioPorCodigo(codigo);
     
-    // 2. Validar que exista y sea un Vendedor
     if (u != null && u instanceof Vendedor) {
         this.vendedorAEditar = (Vendedor) u;
         

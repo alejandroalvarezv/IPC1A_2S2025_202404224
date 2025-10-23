@@ -1,7 +1,7 @@
 codigo,contraseña,nombre,tipo,genero
 admin,IPC1A,Admin Principal,Administrador,
 cliente1,abcd,Maria Lopez,Cliente,
-asd1,IPC1A,Alejandro,Vendedor,Masculino
-asd2,IPC1A,Pedro,Vendedor,Masculino
 asd123,IPC1A,Carolina,Vendedor,Femenino
 asd1234,IPC1A,Paula,Vendedor,Femenino
+asd12345,IPC1A,Pancho,Vendedor,Masculino
+asd1,IPC1A,Estuardo,Vendedor,Masculino
