@@ -96,7 +96,7 @@ public class Administrador extends javax.swing.JFrame {
             int row = Integer.parseInt(e.getActionCommand());
             String codigo = jTable2.getValueAt(row, 0).toString();
 
-            Producto producto = ProductoController.buscarProductoPorCodigo(codigo);
+            Producto producto = ProductoController.buscarProducto(codigo);
 
             if (producto != null) {
                 String detalle = obtenerDetalleProducto(producto);
@@ -110,15 +110,15 @@ public class Administrador extends javax.swing.JFrame {
     }
 
 
-    private String obtenerDetalleProducto(Producto producto) {
-    if (producto instanceof Tecnologia) {
-        Tecnologia t = (Tecnologia) producto;
-        return "Categoría: Tecnología\nGarantía: " + t.getMesesGarantia() + " meses";
-    } else if (producto instanceof Alimento) {
-        Alimento a = (Alimento) producto;
-        return "Categoría: Alimento\nFecha de caducidad: " + a.getFechaCaducidad();
-    } else {
-        return "Categoría: General\nMaterial: " + producto.getMaterial();
+        private String obtenerDetalleProducto(Producto producto) {
+            if (producto instanceof Tecnologia) {
+                Tecnologia t = (Tecnologia) producto;
+            return "Categoría: Tecnología\nGarantía: " + t.getGarantia() + " meses";
+            } else if (producto instanceof Alimento) {
+                Alimento a = (Alimento) producto;
+            return "Categoría: Alimento\nFecha de caducidad: " + a.getFechaCaducidad();
+            } else {
+            return "Categoría: General\nMaterial: " + producto.getMaterial();
     }
 }
 
@@ -227,13 +227,13 @@ public class Administrador extends javax.swing.JFrame {
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Código", "Nombre", "Categoría", "Stock", "Ver Detalles"
+                "Código", "Nombre", "Categoría", "Ver Detalles"
             }
         ));
         jScrollPane1.setViewportView(jTable2);

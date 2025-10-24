@@ -105,7 +105,7 @@ public class EliminarProducto extends javax.swing.JFrame {
             return;
         }
         
-        Producto productoAEliminar = ProductoController.buscarProducto(codigoStr);
+        Producto productoAEliminar = ProductoController.buscarProductoPorCodigo(codigoStr);
         
         if (productoAEliminar == null) {
             JOptionPane.showMessageDialog(this, "No se encontró ningún producto con el código: " + codigoStr, "No Encontrado", JOptionPane.WARNING_MESSAGE);

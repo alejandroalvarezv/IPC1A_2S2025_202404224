@@ -1,5 +1,5 @@
-Codigo,Nombre,Categoria,Material,AtributoEspecifico
-asd1,panito,Alimento,Orgánico,21/12/2025
-asd12,mochila,Generales,lana,N/A
-asd123,telefono,Tecnología,Técnico,5 meses
-PR-002,Pan,Alimento,01/01/2025,25.50
+Codigo,Nombre,Categoria,Material,AtributoEspecifico,Stock
+asd12,LLantas,Generales,Caucho,,0
+PR-001,Computadora,Tecnologia,24,,0
+PR-003,Laptop,Tecnologia,36,,0
+asd1,Pan,Alimento,Orgánico,12/12/2025,1

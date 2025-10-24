@@ -18,230 +18,360 @@ public class ProductoController {
     private static final String ARCHIVO_PRODUCTOS = "data/productos.csv";
     private static boolean productosCargados = false;
     
+    
     private static final Logger logger = Logger.getLogger(ProductoController.class.getName());
     
     
-    public static void cargarProductos() {
-        if (productosCargados || !Files.exists(Paths.get(ARCHIVO_PRODUCTOS))) {
-            productosCargados = true;
-            return;
-        }
-
-        try (BufferedReader br = new BufferedReader(new FileReader(ARCHIVO_PRODUCTOS))) {
-            String linea;
-            br.readLine();
-
-            while ((linea = br.readLine()) != null && contadorProductos < productos.length) {
-                String[] partes = linea.split(",");
-                if (partes.length < 5) {
-                    System.out.println("ADVERTENCIA: Línea CSV con formato incorrecto o incompleto: " + linea);
-                    continue; 
-                }
-                
-                String codigo = partes[0].trim();
-                String nombre = partes[1].trim();
-                String categoria = partes[2].trim();
-                String material = partes[3].trim();
-                String atributoEspecifico = partes[4].trim(); 
-
-                Producto nuevoProducto = null;
-                
-                if (categoria.equals("Tecnología")) { 
-                    try {
-                        int garantia = Integer.parseInt(atributoEspecifico.replace(" meses", "").trim());
-                        nuevoProducto = new Tecnologia(codigo, nombre, material, garantia);
-                    } catch (NumberFormatException ignored) { 
-                        System.out.println("ERROR: Fallo al parsear la garantía para " + codigo);
-                    }
-                } else if (categoria.equals("Alimento")) {
-                    nuevoProducto = new Alimento(codigo, nombre, material, atributoEspecifico);
-                } else if (categoria.equals("Generales")) {
-                    nuevoProducto = new Producto(codigo, nombre, categoria, material);
-                }
-
-                if (nuevoProducto != null && buscarProductoPorCodigo(codigo) == null) {
-                    productos[contadorProductos++] = nuevoProducto;
-                }
-            }
-            productosCargados = true;
-            System.out.println("DEBUG: Se cargaron " + contadorProductos + " productos en memoria.");
-        } catch (IOException e) {
-            System.out.println("Error al cargar productos: " + e.getMessage());
-        }
-    }
-
-    public static Producto buscarProductoPorCodigo(String codigo) {
-        for (int i = 0; i < contadorProductos; i++) {
-            if (productos[i] != null && productos[i].getCodigo().equals(codigo)) {
-                return productos[i];
-            }
-        }
-        return null;
-    }
-
-    public static boolean eliminarProducto(String codigo) {
-        int indiceAEliminar = -1;
-
-        for (int i = 0; i < contadorProductos; i++) {
-            if (productos[i] != null && productos[i].getCodigo().equals(codigo)) {
-                indiceAEliminar = i;
-                break;
-            }
-        }
-
-        if (indiceAEliminar == -1) {
-            logger.warning("Intento de eliminar código no existente: " + codigo);
-            return false;
-        }
-
-        for (int i = indiceAEliminar; i < contadorProductos - 1; i++) {
-            productos[i] = productos[i + 1];
-        }
-
-        productos[contadorProductos - 1] = null;
-        contadorProductos--;
-
-        guardarProductos(); 
-        logger.info("Producto eliminado exitosamente y archivo actualizado: " + codigo);
-        return true;
-    }
-
-    public static Producto buscarProducto(String codigo) {
-        return buscarProductoPorCodigo(codigo);
-    }
-    
-
-    /**
-     * Método auxiliar privado: Añade el producto a la memoria (Array) sin guardarlo en el archivo.
-     * @param p Producto a añadir.
-     * @return true si se agregó, false si hay error o duplicado.
-     */
-    private static boolean agregarProductoInterno(Producto p) {
-        if (p == null || contadorProductos >= productos.length) {
-            return false;
-        }
-        
-        if (buscarProductoPorCodigo(p.getCodigo()) != null) {
-            return false;
-        }
-
-        productos[contadorProductos] = p;
-        contadorProductos++;
-        return true;
-    }
-    
     public static boolean agregarProducto(Producto p) {
-        if (agregarProductoInterno(p)) {
-            guardarProductos(); 
+    if (buscarProductoPorCodigo(p.getCodigo()) != null) {
+        return false; 
+    }
+    if (contadorProductos >= productos.length) {
+        System.out.println("No se pueden agregar más productos, arreglo lleno.");
+        return false;
+    }
+    productos[contadorProductos++] = p;
+    guardarProductos(); 
+    return true;
+}
+
+    
+    public static boolean eliminarProducto(String codigo) {
+    for (int i = 0; i < contadorProductos; i++) {
+        if (productos[i] != null && productos[i].getCodigo().equals(codigo)) {
+            productos[i] = null;
+
+            for (int j = i; j < contadorProductos - 1; j++) {
+                productos[j] = productos[j + 1];
+            }
+            productos[contadorProductos - 1] = null;
+            contadorProductos--;
+
+            guardarProductos();
+
+            recargarProductos();
             return true;
         }
-        System.out.println("Error: El código de producto ya existe o la capacidad está llena.");
-        return false;
     }
+    return false; 
+}
+
+
     
+    public static void cargarProductos() {
+    if (productosCargados || !Files.exists(Paths.get(ARCHIVO_PRODUCTOS))) {
+        productosCargados = true;
+        return;
+    }
 
-    public static void cargarProductosMasivo(String rutaArchivo) {
-        int productosAgregados = 0;
-        try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
-            br.readLine();
-            String linea;
+    try (BufferedReader br = new BufferedReader(new FileReader(ARCHIVO_PRODUCTOS))) {
+        String linea;
+        br.readLine();
 
-            while ((linea = br.readLine()) != null) {
-                String[] datos = linea.split(",");
-
-                if (datos.length < 5) {
-                    System.out.println("Error de formato (esperaba 5 columnas): " + linea);
-                    continue;
-                }
-
-                String codigo = datos[0].trim();
-                String nombre = datos[1].trim();
-                String categoria = datos[2].trim();
-                String material = datos[3].trim();
-                String atributoEspecifico = datos[4].trim();
-
-                if (codigo.isEmpty() || nombre.isEmpty() || categoria.isEmpty()) {
-                    System.out.println("Error: Datos incompletos → " + linea);
-                    continue;
-                }
-
-                if (buscarProductoPorCodigo(codigo) != null) {
-                    System.out.println("Advertencia: Producto con código " + codigo + " ya existe. Saltando...");
-                    continue;
-                }
-
-                Producto nuevoProducto = null;
-
-                if (categoria.equalsIgnoreCase("Tecnología")) {
-                    try {
-                        int garantia = Integer.parseInt(atributoEspecifico.replace(" meses", "").trim());
-                        nuevoProducto = new Tecnologia(codigo, nombre, material, garantia);
-                    } catch (NumberFormatException e) {
-                        System.out.println("Error: Garantía inválida para producto " + codigo);
-                        continue;
-                    }
-                } else if (categoria.equalsIgnoreCase("Alimento")) {
-                    nuevoProducto = new Alimento(codigo, nombre, material, atributoEspecifico);
-                } else if (categoria.equalsIgnoreCase("Generales")) {
-                    nuevoProducto = new Producto(codigo, nombre, categoria, material);
-                }
-
-                if (nuevoProducto != null && agregarProductoInterno(nuevoProducto)) {
-                    productosAgregados++;
-                    System.out.println("Producto cargado en memoria: " + codigo);
-                }
+        while ((linea = br.readLine()) != null && contadorProductos < productos.length) {
+            String[] partes = linea.split(",");
+            
+            if (partes.length < 6) {
+                System.out.println("ADVERTENCIA: Línea CSV con formato incorrecto o incompleto: " + linea);
+                continue;
             }
 
-            if (productosAgregados > 0) {
-                guardarProductos(); 
-                System.out.println("INFO: Se agregaron " + productosAgregados + " productos nuevos al archivo CSV.");
-            }
-            System.out.println("Carga masiva completada desde: " + rutaArchivo);
+            String codigo = partes[0].trim();
+            String nombre = partes[1].trim();
+            String categoria = partes[2].trim();
+            String material = partes[3].trim();
+            String atributoEspecifico = partes[4].trim();
+            int stock = 0;
 
-        } catch (IOException e) {
-            System.out.println("Error al leer archivo: " + e.getMessage());
-        }
-    }
-    
-    public static boolean actualizarProducto(Producto productoAEditar) {
-        if (productoAEditar == null) {
-            return false;
+            try {
+                stock = Integer.parseInt(partes[5].trim());
+            } catch (NumberFormatException e) {
+                System.out.println("ADVERTENCIA: Stock inválido en línea: " + linea + ", se pone 0 por defecto.");
+                stock = 0;
+            }
+
+            Producto nuevoProducto = null;
+
+            if (categoria.equalsIgnoreCase("Tecnología")) {
+                try {
+                    int garantia = Integer.parseInt(atributoEspecifico.replace(" meses", "").trim());
+                    nuevoProducto = new Tecnologia(codigo, nombre, material, garantia, stock);
+                } catch (NumberFormatException e) {
+                    System.out.println("ERROR: Fallo al parsear la garantía para " + codigo);
+                    continue; 
+                }
+            } else if (categoria.equalsIgnoreCase("Alimento")) {
+                nuevoProducto = new Alimento(codigo, nombre, material, atributoEspecifico, stock);
+            } else {
+                // Categoría general
+                nuevoProducto = new Producto(codigo, nombre, categoria, material, stock);
+            }
+
+            if (nuevoProducto != null && buscarProductoPorCodigo(codigo) == null) {
+                productos[contadorProductos++] = nuevoProducto;
+            }
         }
 
-        String codigo = productoAEditar.getCodigo();
-        for (int i = 0; i < contadorProductos; i++) {
-            if (productos[i] != null && productos[i].getCodigo().equals(codigo)) {
-                productos[i] = productoAEditar;
-                
-                guardarProductos(); 
-                return true;
-            }
+        productosCargados = true;
+
+    } catch (IOException e) {
+        System.out.println("Error al cargar productos: " + e.getMessage());
+    }
+}
+
+    
+    public static boolean actualizarStock(String codigoProducto, int nuevaCantidad) {
+        Producto producto =buscarProductoPorCodigo(codigoProducto);
+        if (producto != null) {
+            return actualizarProducto(producto); 
         }
         return false;
     }
     
-    public static Producto[] obtenerProductos() {
-        cargarProductos();
-        
-        Producto[] listaActual = new Producto[contadorProductos];
-        System.arraycopy(productos, 0, listaActual, 0, contadorProductos);
-    return listaActual;
+        public static void recargarProductos() {
+    productosCargados = false;
+    cargarProductos();
     }
     
+    
+public static Producto[] obtenerProductos() {
+    Producto[] copia = new Producto[contadorProductos];
+    for (int i = 0; i < contadorProductos; i++) {
+        copia[i] = productos[i];
+    }
+    return copia;
+}
+
+public static Producto buscarProducto(String codigo) {
+    return buscarProductoPorCodigo(codigo);
+}
+
+
+    public static boolean cargarProductosMasivo(String ruta) {
+    if (!Files.exists(Paths.get(ruta))) {
+        System.out.println("Archivo no existe: " + ruta);
+        return false;
+    }
+
+    try (BufferedReader br = new BufferedReader(new FileReader(ruta))) {
+        String linea;
+        br.readLine(); 
+
+        while ((linea = br.readLine()) != null && contadorProductos < productos.length) {
+            String[] partes = linea.split(",");
+            if (partes.length < 5) { 
+                System.out.println("Línea CSV con formato incorrecto: " + linea);
+                continue;
+            }
+
+            String codigo = partes[0].trim();
+            String nombre = partes[1].trim();
+            String categoria = partes[2].trim();
+            String material = partes[3].trim();
+            String atributoEspecifico = partes[4].trim();
+            int stock = 0; 
+            if (partes.length >= 6) {
+                try {
+                    stock = Integer.parseInt(partes[5].trim());
+                } catch (NumberFormatException ignored) {}
+            }
+
+            Producto nuevoProducto = null;
+
+            if (categoria.equalsIgnoreCase("Tecnología")) {
+                try {
+                    int garantia = Integer.parseInt(atributoEspecifico.replace(" meses", "").trim());
+                    nuevoProducto = new Tecnologia(codigo, nombre, material, garantia, stock);
+                } catch (NumberFormatException e) {
+                    System.out.println("ERROR: Fallo al parsear la garantía para " + codigo);
+                    continue;
+                }
+            } else if (categoria.equalsIgnoreCase("Alimento")) {
+                nuevoProducto = new Alimento(codigo, nombre, material, atributoEspecifico, stock);
+            } else {
+    
+                nuevoProducto = new Producto(codigo, nombre, categoria, material, stock);
+            }
+
+            if (nuevoProducto != null && buscarProductoPorCodigo(codigo) == null) {
+                productos[contadorProductos++] = nuevoProducto;
+            }
+        }
+
+        guardarProductos();
+        return true;
+
+    } catch (IOException e) {
+        System.out.println("Error al cargar productos: " + e.getMessage());
+        return false;
+    }
+    
+        }
+   
     public static void guardarProductos() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(ARCHIVO_PRODUCTOS))) {
-            bw.write("Codigo,Nombre,Categoria,Material,AtributoEspecifico");
-            bw.newLine();
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter(ARCHIVO_PRODUCTOS))) {
+        bw.write("Codigo,Nombre,Categoria,Material,AtributoEspecifico,Stock");
+        bw.newLine();
 
         for (int i = 0; i < contadorProductos; i++) {
-            if (productos[i] !=null){
-                bw.write(productos[i].toString());
+            if (productos[i] != null) {
+                bw.write(productos[i].toCSV());
                 bw.newLine();
             }
         }
         System.out.println("Productos guardados correctamente en " + ARCHIVO_PRODUCTOS);
     } catch (IOException e) {
         System.out.println("Error al guardar productos: " + e.getMessage());
+    }
+}
+    
+    
+    public static Producto buscarProductoPorCodigo(String codigo) {
+    for (int i = 0; i < contadorProductos; i++) {
+        if (productos[i] != null && productos[i].getCodigo().equals(codigo)) {
+            return productos[i];
         }
-    }    
+    }
+    return null;
+}
+    
+    public static boolean actualizarProducto(Producto p) {
+    for (int i = 0; i < contadorProductos; i++) {
+        if (productos[i] != null && productos[i].getCodigo().equals(p.getCodigo())) {
+            productos[i] = p;
+            guardarProductos(); 
+            return true;
+        }
+    }
+    return false;
+}
+    
+    
+    public static boolean actualizarStockMasivo(String rutaArchivo) {
+    if (!Files.exists(Paths.get(rutaArchivo))) {
+        System.out.println("Archivo no existe: " + rutaArchivo);
+        return false;
+    }
+
+    try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
+        String linea;
+        br.readLine();
+
+        while ((linea = br.readLine()) != null) {
+            String[] partes = linea.split(",");
+            if (partes.length < 2) {
+                System.out.println("Línea inválida en CSV de stock: " + linea);
+                continue;
+            }
+
+            String codigo = partes[0].trim();
+            int cantidad = 0;
+            try {
+                cantidad = Integer.parseInt(partes[1].trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Stock inválido en línea: " + linea);
+                continue;
+            }
+
+            Producto p = buscarProductoPorCodigo(codigo);
+            if (p != null) {
+                p.setStock(p.getStock() + cantidad);
+            } else {
+                System.out.println("Producto no encontrado: " + codigo);
+            }
+        }
+
+        guardarProductos();
+        return true;
+
+    } catch (IOException e) {
+        System.out.println("Error al actualizar stock masivo: " + e.getMessage());
+        return false;
+    }
+}
+
+        public static boolean generarCSVStockActualizado(String rutaSalida) {
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter(rutaSalida))) {
+        // Cabecera
+        bw.write("Codigo,Nombre,Categoria,Stock");
+        bw.newLine();
+
+        for (Producto p : productos) {
+            if (p != null) {
+                bw.write(p.getCodigo() + "," +
+                         p.getNombre() + "," +
+                         p.getCategoria() + "," +
+                         p.getStock());
+                bw.newLine();
+            }
+        }
+
+        System.out.println("CSV de stock actualizado creado correctamente en: " + rutaSalida);
+        return true;
+
+    } catch (IOException e) {
+        System.out.println("Error al generar CSV de stock actualizado: " + e.getMessage());
+        return false;
+    }
+}
+
+        public static boolean generarCSVStockCompleto(String rutaSalida) {
+    try (BufferedWriter bw = new BufferedWriter(new FileWriter(rutaSalida))) {
+        // Cabecera completa
+        bw.write("Codigo,Nombre,Categoria,Material,AtributoEspecifico,Stock");
+        bw.newLine();
+
+        for (Producto p : productos) {
+            if (p != null) {
+                bw.write(p.toCSV()); 
+                bw.newLine();
+            }
+        }
+
+        System.out.println("CSV completo de productos creado correctamente en: " + rutaSalida);
+        return true;
+
+    } catch (IOException e) {
+        System.out.println("Error al generar CSV completo: " + e.getMessage());
+        return false;
+    }
+}
+
+       public static boolean generarStockMasivo(String rutaArchivo) {
+    if (!Files.exists(Paths.get(rutaArchivo))) {
+        System.out.println("Archivo no existe: " + rutaArchivo);
+        return false;
+    }
+
+    try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
+        String linea;
+        br.readLine(); // Saltar encabezado
+        while ((linea = br.readLine()) != null) {
+            String[] partes = linea.split(",");
+            if (partes.length != 2) continue;
+
+            String codigo = partes[0].trim();
+            int cantidad = 0;
+            try {
+                cantidad = Integer.parseInt(partes[1].trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Cantidad inválida en línea: " + linea);
+                continue;
+            }
+
+            Producto producto = buscarProductoPorCodigo(codigo);
+            if (producto != null) {
+                producto.setStock(cantidad); 
+            } else {
+                System.out.println("Producto no encontrado: " + codigo);
+            }
+        }
+
+        guardarProductos(); 
+        return true;
+    } catch (IOException e) {
+        System.out.println("Error al cargar stock: " + e.getMessage());
+        return false;
+    }
+}  
 }

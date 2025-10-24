@@ -14,7 +14,7 @@ public class CrearProducto extends javax.swing.JFrame {
         initComponents();
     }
     public CrearProducto(Administrador adminView) {
-        this(); // Llama a initComponents
+        this(); 
         this.adminView = adminView;
     }
 
@@ -178,16 +178,18 @@ public class CrearProducto extends javax.swing.JFrame {
         return;
     }
 
+    int stock = 0;
+
     Producto nuevoProducto = null;
 
     if (categoria.equals("Generales")) {
         String material = atributoEspecifico;
-        nuevoProducto = new Producto(codigo, nombre, categoria, material);
+        nuevoProducto = new Producto(codigo, nombre, categoria, material, stock);
 
     } else if (categoria.equals("Tecnología")) {
         try {
             int garantia = Integer.parseInt(atributoEspecifico);
-            nuevoProducto = new Tecnologia(codigo, nombre, "Técnico", garantia);
+            nuevoProducto = new Tecnologia(codigo, nombre, "Técnico", garantia, stock);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "La garantía debe ser un número entero.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
             logger.log(Level.WARNING, "Error al convertir garantía a número.", e);
@@ -196,12 +198,12 @@ public class CrearProducto extends javax.swing.JFrame {
 
     } else if (categoria.equals("Alimento")) {
         String fechaCaducidad = atributoEspecifico;
-        nuevoProducto = new Alimento(codigo, nombre, "Orgánico", fechaCaducidad);
+        nuevoProducto = new Alimento(codigo, nombre, "Orgánico", fechaCaducidad, stock);
     }
 
     if (nuevoProducto != null) {
         if (ProductoController.agregarProducto(nuevoProducto)) {
-            ProductoController.guardarProductos(); // Persistir los cambios
+            ProductoController.guardarProductos();
 
             if (adminView != null) {
                 adminView.actualizarTablaProductos(); 
@@ -213,6 +215,7 @@ public class CrearProducto extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error: El código de producto ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

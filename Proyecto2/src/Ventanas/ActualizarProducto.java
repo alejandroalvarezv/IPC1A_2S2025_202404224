@@ -10,9 +10,11 @@ import java.util.logging.Logger;
 
 public class ActualizarProducto extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ActualizarProducto.class.getName());
-    private Administrador adminView; 
-    private Producto productoAEditar; 
+    private Administrador adminView;
+    private Producto productoAEditar;
+    private static final Logger logger = Logger.getLogger(ActualizarProducto.class.getName());
+    
+    private javax.swing.JLabel jLabel5; 
 
     
     public ActualizarProducto() {
@@ -28,11 +30,6 @@ public class ActualizarProducto extends javax.swing.JFrame {
         this.setLocationRelativeTo(adminView);
     }
 
-
-    /**
-     * Habilita o deshabilita los campos de edición y los botones de acción.
-     * @param habilitado True para habilitar campos de edición, False para buscar.
-     */
     private void establecerEstadoCamposEdicion(boolean habilitado) {
         jTextField2.setEditable(habilitado); 
         jTextField3.setEditable(habilitado); 
@@ -46,16 +43,11 @@ public class ActualizarProducto extends javax.swing.JFrame {
             jTextField1.setText("");
             jTextField2.setText("");
             jTextField3.setText("");
-            jLabel4.setText("Atributo Único:");
             productoAEditar = null; 
         }
     }
     
 
-    /**
-     * Carga la información del producto encontrado en los campos de texto.
-     * @param producto El objeto Producto a editar.
-     */
     private void cargarProductoEnCampos(Producto producto) {
         if (producto == null) return;
         
@@ -64,7 +56,13 @@ public class ActualizarProducto extends javax.swing.JFrame {
         
         if (producto instanceof Tecnologia) {
             Tecnologia t = (Tecnologia) producto;
-            jTextField3.setText(String.valueOf(t.getMesesGarantia()));
+            try {
+                int garantia = Integer.parseInt(t.getAtributoEspecifico().replace(" meses", "").trim());
+                jTextField3.setText(String.valueOf(garantia));
+            } catch (NumberFormatException e) {
+                 jTextField3.setText(t.getAtributoEspecifico());
+            }
+            
             jLabel4.setText("Meses Garantía (int):");
             jTextField3.setEditable(true); 
         } else if (producto instanceof Alimento) {
@@ -72,10 +70,10 @@ public class ActualizarProducto extends javax.swing.JFrame {
             jTextField3.setText(a.getFechaCaducidad());
             jLabel4.setText("Fecha Caducidad (dd/mm/aaaa):");
             jTextField3.setEditable(true); 
-        } else { 
-            jTextField3.setText("");
-            jTextField3.setEditable(false); // Inhabilita el campo
-            jLabel4.setText("Atributo Único: N/A");
+        } else { // Producto General
+            jTextField3.setText(producto.getAtributoEspecifico());
+            jTextField3.setEditable(true); 
+            jLabel4.setText("Material:");
         }
         
         establecerEstadoCamposEdicion(true);
@@ -197,69 +195,71 @@ public class ActualizarProducto extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         String codigoStr = jTextField1.getText().trim();
-    if (codigoStr.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Debe ingresar el código del producto a buscar.", "Error de Búsqueda", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-    
-    productoAEditar = ProductoController.buscarProducto(codigoStr);
-    
-    if (productoAEditar != null) {
-        cargarProductoEnCampos(productoAEditar);
-        JOptionPane.showMessageDialog(this, "Producto encontrado. Ya puede editar el Nombre y el Atributo Único.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-    } else {
-        JOptionPane.showMessageDialog(this, "No se encontró ningún producto con el código: " + codigoStr, "No Encontrado", JOptionPane.WARNING_MESSAGE);
-        establecerEstadoCamposEdicion(false);
-    }
+            if (codigoStr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Debe ingresar el código del producto a buscar.", "Error de Búsqueda", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+                productoAEditar = ProductoController.buscarProductoPorCodigo(codigoStr); 
+        
+            if (productoAEditar != null) {
+                cargarProductoEnCampos(productoAEditar);
+                JOptionPane.showMessageDialog(this, "Producto encontrado. Ya puede editar el Nombre, Atributo Único y Stock.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "No se encontró ningún producto con el código: " + codigoStr, "No Encontrado", JOptionPane.WARNING_MESSAGE);
+                establecerEstadoCamposEdicion(false);
+        }                                 
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         if (productoAEditar == null) {
-            JOptionPane.showMessageDialog(this, "Primero debe buscar y cargar un producto válido.", "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Primero debe buscar y cargar un producto válido.", "Error", JOptionPane.ERROR_MESSAGE);
         return;
     }
 
     // 1. Obtener Nuevos Valores
-    String nuevoNombre = jTextField2.getText().trim();
-    String nuevoAtributo = jTextField3.getText().trim(); 
+        String nuevoNombre = jTextField2.getText().trim();
+        String nuevoAtributo = jTextField3.getText().trim(); 
 
-    if (nuevoNombre.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "El nombre no puede estar vacío.", "Validación", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-    
-    productoAEditar.setNombre(nuevoNombre);
-    
-    if (productoAEditar instanceof Tecnologia) {
-        if (nuevoAtributo.isEmpty()) {
-             JOptionPane.showMessageDialog(this, "Los meses de garantía no pueden estar vacíos.", "Validación", JOptionPane.WARNING_MESSAGE);
-             return;
-        }
-        try {
-            int nuevaGarantia = Integer.parseInt(nuevoAtributo);
-            ((Tecnologia) productoAEditar).setMesesGarantia(nuevaGarantia);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Los meses de garantía deben ser un número entero válido.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+            if (nuevoNombre.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "El nombre no puede estar vacío.", "Validación", JOptionPane.WARNING_MESSAGE);
             return;
         }
-    } else if (productoAEditar instanceof Alimento) {
-        if (nuevoAtributo.isEmpty()) {
-             JOptionPane.showMessageDialog(this, "La fecha de caducidad no puede estar vacía.", "Validación", JOptionPane.WARNING_MESSAGE);
-             return;
+
+    productoAEditar.setNombre(nuevoNombre);
+
+            if (productoAEditar instanceof Tecnologia) {
+                if (!nuevoAtributo.isEmpty()) {
+            try {
+                int nuevaGarantia = Integer.parseInt(nuevoAtributo);
+                ((Tecnologia) productoAEditar).setGarantia(nuevaGarantia);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Los meses de garantía deben ser un número entero válido.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
-        ((Alimento) productoAEditar).setFechaCaducidad(nuevoAtributo);
-    } 
-    
-    ProductoController.guardarProductos();
-    
-    if (adminView != null) {
-        adminView.actualizarTablaProductos();
+            } else if (productoAEditar instanceof Alimento) {
+                if (!nuevoAtributo.isEmpty()) {
+                    ((Alimento) productoAEditar).setFechaCaducidad(nuevoAtributo);
+                }
+            } else {
+                
+            if (!nuevoAtributo.isEmpty()) {
+                productoAEditar.setMaterial(nuevoAtributo);
+        }
     }
-    
-    JOptionPane.showMessageDialog(this, "Producto " + productoAEditar.getCodigo() + " actualizado exitosamente.");
-    
-    this.dispose(); 
-    establecerEstadoCamposEdicion(false);
+
+            if (ProductoController.actualizarProducto(productoAEditar)) {
+                if (adminView != null) {
+                    adminView.actualizarTablaProductos();
+            }
+                JOptionPane.showMessageDialog(this, "Producto " + productoAEditar.getCodigo() + " actualizado exitosamente.");
+                this.dispose(); 
+                establecerEstadoCamposEdicion(false);
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al actualizar el producto.", "Error de Guardado", JOptionPane.ERROR_MESSAGE);
+        }
 
     }//GEN-LAST:event_jButton2ActionPerformed
 

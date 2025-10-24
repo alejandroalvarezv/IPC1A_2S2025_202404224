@@ -2,26 +2,32 @@ package Ventanas;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.JOptionPane; 
-import controlador.ProductoController; 
-import Ventanas.Administrador;
+import javax.swing.JOptionPane;
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import controlador.ProductoController;
+
 public class CargaMasivaProductos extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CargaMasivaProductos.class.getName());
+
+    private static final Logger logger = Logger.getLogger(CargaMasivaProductos.class.getName());
 
     private Administrador adminView;
-    
+    private File selectedCsvFile; 
     public CargaMasivaProductos(Administrador adminView) {
-    this(); 
-    this.adminView = adminView;
-    this.setLocationRelativeTo(adminView);
-        }
-    
+        this(); 
+        this.adminView = adminView;
+        this.setLocationRelativeTo(adminView);
+        setTitle("Carga Masiva de Productos");
+    }
+
     public CargaMasivaProductos() {
         initComponents();
         jTextField1.setEditable(false); 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        jTextField1.setColumns(25); 
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE); 
+        setTitle("Carga Masiva de Productos");
     }
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -89,37 +95,45 @@ public class CargaMasivaProductos extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        String ruta = jTextField1.getText().trim(); 
-    
-    if (ruta.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Debe seleccionar o ingresar la ruta del archivo CSV.", "Error de Validación", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-    
-    ProductoController.cargarProductosMasivo(ruta);
-    
-    JOptionPane.showMessageDialog(this, "Proceso de carga masiva finalizado. Revise la consola para detalles de duplicados o errores de formato.", "Carga Terminada", JOptionPane.INFORMATION_MESSAGE);
-    
-    if (adminView != null) { 
-        adminView.actualizarTablaProductos(); 
-    }
-    
-    this.dispose(); 
- 
+        if (selectedCsvFile == null) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar un archivo CSV antes de cargar.", "Error de Validación", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String ruta = selectedCsvFile.getAbsolutePath();
+
+        
+        boolean cargaExitosa = ProductoController.cargarProductosMasivo(ruta);
+        
+        if (cargaExitosa) {
+            JOptionPane.showMessageDialog(this, "Carga masiva finalizada. Productos importados correctamente.", "Carga Terminada", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+             JOptionPane.showMessageDialog(this, "Proceso de carga masiva finalizado, pero hubo errores. Revise la consola para detalles de duplicados o errores de formato.", "Carga Terminada con Advertencias", JOptionPane.WARNING_MESSAGE);
+        }
+        
+        if (adminView != null) { 
+            adminView.actualizarTablaProductos(); 
+        }
+        
+        this.dispose(); 
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         JFileChooser fileChooser = new JFileChooser();
-    
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos CSV", "csv");
-            fileChooser.setFileFilter(filter);
-    
-    int returnValue = fileChooser.showOpenDialog(this);
-    
-    if (returnValue == JFileChooser.APPROVE_OPTION) {
-        File selectedFile = fileChooser.getSelectedFile();
-        jTextField1.setText(selectedFile.getAbsolutePath());
-    }
+        
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos CSV (.csv)", "csv");
+        fileChooser.setFileFilter(filter);
+        
+        int returnValue = fileChooser.showOpenDialog(this);
+        
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            selectedCsvFile = fileChooser.getSelectedFile();
+            jTextField1.setText(selectedCsvFile.getName()); 
+            
+        } else {
+            selectedCsvFile = null;
+            jTextField1.setText("");
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed

@@ -1,27 +1,32 @@
 package Ventanas;
-import Ventanas.Administrador;
+import javax.swing.JOptionPane;
+import modelo.Producto;
+import controlador.ProductoController;
 import modelo.Vendedor;
-import javax.swing.*;
-import java.util.logging.Logger;
-import java.awt.Frame;
+import controlador.HistorialController;
+import modelo.Historial;
+import java.time.LocalDate;
+
 
 public class AgregarStock extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AgregarStock.class.getName());
+    private VentanaVendedor vendedorView; 
     private Vendedor vendedorActual;
 
-    /**
-     * Creates new form AgregarStock
-     */
-    public AgregarStock(Frame parent, Vendedor vendedor) {
-        super("Agregar Stock al Inventario"); 
-        this.vendedorActual = vendedor;
+    public AgregarStock(VentanaVendedor vendedorView, Vendedor vendedorActual) {
         initComponents();
-        this.setLocationRelativeTo(parent);
+        this.vendedorView = vendedorView;
+        this.vendedorActual = vendedorActual;
+        this.setLocationRelativeTo(vendedorView);
+        setTitle("Agregar Stock");
+        this.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     }
     
     public AgregarStock() {
-        this(null, new Vendedor("TEST-000", "Sistema de Prueba"));
+        initComponents();
+        this.setLocationRelativeTo(null);
+        setTitle("Agregar Stock");
+        this.setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE); // Mejor práctica
     }
 
     /**
@@ -125,37 +130,62 @@ public class AgregarStock extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        String codigo = jTextField1.getText().trim();
-        String cantidadStr = jTextField2.getText().trim();
-        
-        if (codigo.isEmpty() || cantidadStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Debe ingresar el código del producto y la cantidad.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
+    String codigo = jTextField1.getText().trim(); 
+    String cantidadStr = jTextField2.getText().trim();
+
+    if (codigo.isEmpty() || cantidadStr.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Debe ingresar el código del producto y la cantidad.", "Validación", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int cantidadAAgregar;
+    try {
+        cantidadAAgregar = Integer.parseInt(cantidadStr);
+        if (cantidadAAgregar <= 0) {
+            JOptionPane.showMessageDialog(this, "La cantidad a agregar debe ser un número positivo.", "Validación", JOptionPane.WARNING_MESSAGE);
             return;
         }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "La cantidad debe ser un número entero válido.", "Validación", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
 
-        int cantidad;
-        try {
-            cantidad = Integer.parseInt(cantidadStr);
-            if (cantidad <= 0) {
-                JOptionPane.showMessageDialog(this, "La cantidad debe ser un número positivo mayor que cero.", "Error de Cantidad", JOptionPane.ERROR_MESSAGE);
-                return;
+    Producto producto = ProductoController.buscarProducto(codigo);
+
+    if (producto == null) {
+        JOptionPane.showMessageDialog(this, "No se encontró un producto con el código " + codigo + ".", "Error de Búsqueda", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    int confirmacion = JOptionPane.showConfirmDialog(
+        this,
+        "Añadir " + cantidadAAgregar + " unidades a: " + producto.getNombre() + ".\n¿Desea confirmar?",
+        "Confirmar Adición de Stock",
+        JOptionPane.YES_NO_OPTION,
+        JOptionPane.QUESTION_MESSAGE
+    );
+
+    if (confirmacion == JOptionPane.YES_OPTION) {
+        producto.setStock(producto.getStock() + cantidadAAgregar);
+
+        boolean actualizado = ProductoController.actualizarProducto(producto);
+
+        if (actualizado) {
+            JOptionPane.showMessageDialog(this, "Stock de " + producto.getNombre() + " actualizado correctamente.");
+
+            if (vendedorView != null) {
+                vendedorView.actualizarTablaProductos(); 
             }
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "La cantidad ingresada no es un número válido.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        String mensajeConfirmacion = String.format(
-            "Ingreso de Stock Confirmado:\n" +
-            " - Código: %s\n" +
-            " - Cantidad: %d\n" +
-            " - Registrado por: %s (ID: %s)",
-            codigo, cantidad, vendedorActual.getNombre(), vendedorActual.getCodigo()
-        );
 
-        JOptionPane.showMessageDialog(this, mensajeConfirmacion, "Stock Agregado", JOptionPane.INFORMATION_MESSAGE);
-        
-        this.dispose();
+            Historial nuevoHistorial = new Historial(codigo, cantidadAAgregar);
+            HistorialController.agregarHistorial(nuevoHistorial);
+
+            this.dispose();
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al guardar el stock del producto.", "Error Interno", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
@@ -179,7 +209,8 @@ public class AgregarStock extends javax.swing.JFrame {
                 }
             }
         } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AgregarStock.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        
         }
         //</editor-fold>
 

@@ -8,6 +8,7 @@ import Ventanas.Administrador;
 public class CargaMasivaVendedores extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(CargaMasivaVendedores.class.getName());
+    private Administrador administrador;
     private Administrador adminView;
     
     public CargaMasivaVendedores(Administrador adminView) {
@@ -122,6 +123,8 @@ public class CargaMasivaVendedores extends javax.swing.JFrame {
     JOptionPane.showMessageDialog(this, "Proceso de carga masiva finalizado. Revise la consola para detalles de duplicados o errores de formato.", "Carga Terminada", JOptionPane.INFORMATION_MESSAGE);
     
     if (adminView != null) { 
+        adminView.actualizarTablaVendedores();
+
     }
     
     this.dispose(); 

@@ -1,36 +1,46 @@
 package modelo;
-import java.io.Serializable;
 
-public class Producto implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Producto {
+    private String codigo;
+    private String nombre;
+    private String categoria;
+    private String material;
+    private int stock; 
 
-    protected String codigo;
-    protected String nombre;
-    protected String categoria;
-    protected String material;
-
-    public Producto(String codigo, String nombre, String categoria, String material) {
+    public Producto(String codigo, String nombre, String categoria, String material, int stock) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.categoria = categoria;
         this.material = material;
+        this.stock = stock;
     }
 
     public String getCodigo() { return codigo; }
     public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
     public String getCategoria() { return categoria; }
     public String getMaterial() { return material; }
-
-    public void setNombre(String nombre) { this.nombre = nombre; }
     public void setMaterial(String material) { this.material = material; }
 
-    public String getAtributoEspecifico() {
-        return "N/A";  
+    public int getStock() { return stock; }
+    public void setStock(int stock) { this.stock = stock; }
+
+    public String getAtributoEspecifico() { 
+        return ""; 
     }
+
+    public String toCSV() {
+        return codigo + "," + nombre + "," + categoria + "," + material + "," + getAtributoEspecifico() + "," + stock;
+    }   
 
     @Override
     public String toString() {
-        return codigo + "," + nombre + "," + categoria + "," + material + "," + getAtributoEspecifico();
+        return "Producto{" +
+               "codigo='" + codigo + '\'' +
+               ", nombre='" + nombre + '\'' +
+               ", categoria='" + categoria + '\'' +
+               ", material='" + material + '\'' +
+               ", stock=" + stock +
+               '}';
     }
 }
-
