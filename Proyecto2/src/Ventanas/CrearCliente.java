@@ -3,18 +3,22 @@ import javax.swing.*;
 import modelo.Cliente;
 import controlador.ClienteController;
 import java.util.logging.Logger;
+import Ventanas.VentanaVendedor;
 
 public class CrearCliente extends javax.swing.JFrame {
 
     private static final Logger logger = Logger.getLogger(CrearCliente.class.getName());
 
+    private VentanaVendedor ventanaPadre; 
     public CrearCliente() {
         initComponents();
     }
 
-    public CrearCliente(JFrame parent) {
+    public CrearCliente(VentanaVendedor parent) {
         initComponents();
-        this.setLocationRelativeTo(parent); // Centra la ventana respecto a la ventana padre
+        this.ventanaPadre = parent;
+        this.setLocationRelativeTo(parent); 
+        this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
     /**
      * This method is called from within the constructor to initialize the form.
@@ -177,15 +181,16 @@ public class CrearCliente extends javax.swing.JFrame {
         }
     
     
+    
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-         String codigo = jTextField1.getText().trim();
+            String codigo = jTextField1.getText().trim();
         String nombre = jTextField2.getText().trim();
         String genero = jTextField3.getText().trim();
         String cumple = jTextField4.getText().trim();
         String contrasena = jTextField5.getText().trim();
-        String vendedor = "VendedorActual";
+        String vendedor = "VendedorActual"; 
 
         if (codigo.isEmpty() || nombre.isEmpty() || contrasena.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Código, nombre y contraseña son obligatorios.");
@@ -197,6 +202,13 @@ public class CrearCliente extends javax.swing.JFrame {
         if (ClienteController.agregarCliente(c, genero, cumple, vendedor)) {
             JOptionPane.showMessageDialog(this, "Cliente creado correctamente.");
             limpiarCampos();
+            
+            if (this.ventanaPadre != null) {
+                this.ventanaPadre.actualizarTablaClientes();
+            }
+            
+            this.dispose(); 
+            
         } else {
             JOptionPane.showMessageDialog(this, "El código ya existe. Verifique.");
         }

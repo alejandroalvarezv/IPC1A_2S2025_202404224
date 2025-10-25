@@ -3,6 +3,7 @@ import modelo.Alimento;
 import modelo.Tecnologia;
 import modelo.Producto;
 import controlador.ProductoController;
+import modelo.ProductoPrecio;
 import javax.swing.JOptionPane;
 import java.util.logging.Level;
 public class CrearProducto extends javax.swing.JFrame {
@@ -168,28 +169,31 @@ public class CrearProducto extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+
     String codigo = jTextField1.getText().trim();
     String nombre = jTextField2.getText().trim();
     String categoria = (String) jComboBox1.getSelectedItem();
     String atributoEspecifico = jTextField3.getText().trim();
+
+
+    double precioInicial = 1.0; 
+    int stock = 0;
 
     if (codigo.isEmpty() || nombre.isEmpty() || categoria.equals("Seleccione") || atributoEspecifico.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Debe seleccionar una categoría y completar todos los campos.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
         return;
     }
 
-    int stock = 0;
-
     Producto nuevoProducto = null;
 
     if (categoria.equals("Generales")) {
         String material = atributoEspecifico;
-        nuevoProducto = new Producto(codigo, nombre, categoria, material, stock);
+        nuevoProducto = new modelo.ProductoPrecio(codigo, nombre, categoria, material, stock, precioInicial);
 
     } else if (categoria.equals("Tecnología")) {
         try {
             int garantia = Integer.parseInt(atributoEspecifico);
-            nuevoProducto = new Tecnologia(codigo, nombre, "Técnico", garantia, stock);
+            nuevoProducto = new Tecnologia(codigo, nombre, categoria, garantia, stock, precioInicial);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "La garantía debe ser un número entero.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
             logger.log(Level.WARNING, "Error al convertir garantía a número.", e);
@@ -198,15 +202,13 @@ public class CrearProducto extends javax.swing.JFrame {
 
     } else if (categoria.equals("Alimento")) {
         String fechaCaducidad = atributoEspecifico;
-        nuevoProducto = new Alimento(codigo, nombre, "Orgánico", fechaCaducidad, stock);
+        nuevoProducto = new Alimento(codigo, nombre, categoria, fechaCaducidad, stock, precioInicial);
     }
 
     if (nuevoProducto != null) {
         if (ProductoController.agregarProducto(nuevoProducto)) {
-            ProductoController.guardarProductos();
-
             if (adminView != null) {
-                adminView.actualizarTablaProductos(); 
+                adminView.actualizarTablaProductos();
             }
 
             JOptionPane.showMessageDialog(this, "Producto creado exitosamente: " + nombre, "Éxito", JOptionPane.INFORMATION_MESSAGE);

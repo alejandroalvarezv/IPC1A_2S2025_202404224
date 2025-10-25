@@ -1,6 +1,6 @@
 package Ventanas;
 import modelo.ButtonColumn2;
-import controlador.HistorialController; // si no lo tienes aún
+import controlador.HistorialController; 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import modelo.Vendedor;
@@ -8,95 +8,180 @@ import modelo.Producto;
 import controlador.ProductoController;
 import modelo.Cliente;
 import controlador.ClienteController;
+import java.util.logging.Logger;
+import Ventanas.VentanaVendedor;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import java.io.File;
+import modelo.Pedido; 
+import modelo.ButtonColumn3;
+import controlador.PedidoController; 
+import java.time.format.DateTimeFormatter;
 
 
 public class VentanaVendedor extends javax.swing.JFrame {
-    
-
     private static final java.util.logging.Logger logger =
             java.util.logging.Logger.getLogger(VentanaVendedor.class.getName());
 
     private Vendedor vendedorActual;
 
     public VentanaVendedor(Vendedor vendedor) {
-        initComponents();
+        initComponents(); 
         this.vendedorActual = vendedor;
         this.setLocationRelativeTo(null);
         setTitle("Panel del Vendedor - " + vendedor.getNombre());
+        
+        ProductoController.cargarProductos(); 
+        PedidoController.cargarPedidos(); 
+        
         actualizarTablaProductos(); 
+        actualizarTablaClientes(); 
+        actualizarTablaPedidos();
     }
+    
 
     public VentanaVendedor() {
         this(new Vendedor("TEMP001", "1234", "Temporal", "Otro"));
     }
 
     public void actualizarTablaProductos() {
-            ProductoController.cargarProductos();
-            DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
-    model.setRowCount(0); 
+        
+        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+        model.setRowCount(0); 
 
-    Producto[] productos = ProductoController.obtenerProductos();
+        Producto[] productos = ProductoController.obtenerProductos();
 
-    if (productos == null || productos.length == 0) {
-        System.out.println("⚠ No hay productos cargados.");
-        return;
-    }
+        if (productos == null || productos.length == 0) {
+            System.out.println("No hay productos cargados.");
+            return;
+        }
 
-    for (Producto p : productos) {
-        if (p != null) {
-            model.addRow(new Object[]{
+        for (Producto p : productos) {
+            if (p != null) {
+                model.addRow(new Object[]{
                     p.getCodigo(),
                     p.getNombre(),
                     p.getCategoria(),
                     p.getStock(),
                     "Ver historial" 
+                });
+            }
+        }
+
+        int columnaBoton = model.findColumn("Acciones");
+        new ButtonColumn2(jTable1, columnaBoton, new java.awt.event.ActionListener() {
+            @Override
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                int fila = Integer.parseInt(e.getActionCommand());
+                String codigoProducto = model.getValueAt(fila, 0).toString();
+                mostrarHistorial(codigoProducto);
+            }
+        });
+    }
+
+    private void mostrarHistorial(String codigoProducto) {
+        String historial = HistorialController.obtenerHistorial(codigoProducto);
+
+        JOptionPane.showMessageDialog(this,
+                historial,
+                "Historial de ingresos - Producto " + codigoProducto,
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public void actualizarTablaClientes() {
+        DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+        model.setRowCount(0);
+
+        Cliente[] clientes = ClienteController.obtenerClientes(); 
+
+        if (clientes == null || clientes.length == 0) {
+            System.out.println("No hay clientes cargados.");
+            return;
+        }
+
+        for (Cliente c : clientes) {
+            if (c != null) {
+                model.addRow(new Object[]{
+                    c.getCodigo(),
+                    c.getNombre(),
+                    ClienteController.getGenero(c.getCodigo()),    
+                    ClienteController.getCumpleaños(c.getCodigo())    
+                });
+            }
+        }
+    } 
+            
+        public void actualizarTablaPedidos() {
+    DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
+    model.setRowCount(0); 
+
+    Pedido[] todosLosPedidos = PedidoController.obtenerPedidosActivos();
+    DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+    if (todosLosPedidos == null) return;
+    
+    for (Pedido p : todosLosPedidos) {
+        if (p != null && p.getEstado().equals("Pendiente")) {
+            Cliente cliente = ClienteController.buscarClientePorCodigo(p.getCodigoCliente());
+            String nombreCliente = (cliente != null) ? cliente.getNombre() : "Desconocido";
+
+            model.addRow(new Object[]{
+                p.getIdPedido(),
+                p.getFechaCreacion().format(displayFormatter),
+                p.getCodigoCliente(),
+                nombreCliente,
+                String.format("%.2f", p.getTotal()), 
+                "Confirmar" 
             });
         }
     }
-
-    int columnaBoton = model.findColumn("Acciones");
-    new ButtonColumn2(jTable1, columnaBoton, new java.awt.event.ActionListener() {
+    
+    int columnaBoton = model.findColumn("Opciones");
+    new ButtonColumn3(jTable3, columnaBoton, new java.awt.event.ActionListener() {
         @Override
         public void actionPerformed(java.awt.event.ActionEvent e) {
             int fila = Integer.parseInt(e.getActionCommand());
-            String codigoProducto = model.getValueAt(fila, 0).toString();
-            mostrarHistorial(codigoProducto);
+            String idPedido = model.getValueAt(fila, 0).toString();
+            confirmarPedido(idPedido); 
         }
     });
 }
-    
-    
-    private void mostrarHistorial(String codigoProducto) {
-    String historial = HistorialController.obtenerHistorial(codigoProducto);
 
-    JOptionPane.showMessageDialog(this,
-            historial,
-            "Historial de ingresos - Producto " + codigoProducto,
-            JOptionPane.INFORMATION_MESSAGE);
-}
+        private void confirmarPedido(String idPedido) {
+            Pedido pedido = PedidoController.buscarPedidoPorId(idPedido);
     
-    public void actualizarTablaClientes() {
-    DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
-    model.setRowCount(0);
-
-    Cliente[] clientes = ClienteController.obtenerClientes(); 
-
-    if (clientes == null || clientes.length == 0) {
-        System.out.println("⚠ No hay clientes cargados.");
+        if (pedido == null || !pedido.getEstado().equals("Pendiente")) {
+            JOptionPane.showMessageDialog(this, "Error: Pedido no encontrado o ya ha sido procesado.", "Error", JOptionPane.ERROR_MESSAGE);
         return;
     }
+    
 
-    for (Cliente c : clientes) {
-        if (c != null) {
-            model.addRow(new Object[]{
-                c.getCodigo(),
-                c.getNombre(),
-                ClienteController.getGenero(c.getCodigo()),     
-                ClienteController.getCumpleaños(c.getCodigo())   
-            });
-        }
+        String descripcionItems = pedido.getDescripcionItems();
+            if (!ProductoController.verificarStockParaPedido(descripcionItems)) {
+        JOptionPane.showMessageDialog(this, 
+            "STOCK INSUFICIENTE. El pedido no puede ser confirmado.", 
+            "Fallo de Stock", JOptionPane.WARNING_MESSAGE);
+        return;
     }
-}  
+    
+    ProductoController.descontarStockParaPedido(descripcionItems);
+    
+    if (PedidoController.actualizarEstadoPedido(idPedido, "Confirmado")) {
+        
+        vendedorActual.aumentarVentas(); 
+        
+        JOptionPane.showMessageDialog(this, 
+            "Pedido " + idPedido + " CONFIRMADO con éxito.\nVentas confirmadas por usted: " + vendedorActual.getVentasConfirmadas(), 
+            "Pedido Confirmado", JOptionPane.INFORMATION_MESSAGE);
+            
+        actualizarTablaPedidos(); 
+        actualizarTablaProductos(); 
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al actualizar el estado del pedido.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }  
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -120,6 +205,9 @@ public class VentanaVendedor extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTable3 = new javax.swing.JTable();
+        jButton7 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -171,7 +259,7 @@ public class VentanaVendedor extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 398, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addContainerGap(55, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jButton1)
@@ -203,8 +291,18 @@ public class VentanaVendedor extends javax.swing.JFrame {
         });
 
         jButton4.setText("Cargar");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
         jButton5.setText("Actualizar");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         jButton6.setText("Eliminar");
         jButton6.addActionListener(new java.awt.event.ActionListener() {
@@ -249,26 +347,57 @@ public class VentanaVendedor extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Clientes", jPanel2);
 
+        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Codigo", "Fecha de Generacion", "Codigo Cliente", "Nombre Cliente", "Total", "Opciones"
+            }
+        ));
+        jScrollPane3.setViewportView(jTable3);
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 734, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 722, Short.MAX_VALUE)
+                .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 422, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(15, 15, 15)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 383, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(24, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Pedidos", jPanel3);
+
+        jButton7.setText("Cerrar Sesion");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 734, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 734, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(319, 319, 319)
+                        .addComponent(jButton7)))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -276,7 +405,9 @@ public class VentanaVendedor extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 457, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jButton7)
+                .addContainerGap(26, Short.MAX_VALUE))
         );
 
         pack();
@@ -304,13 +435,56 @@ public class VentanaVendedor extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        // TODO add your handling code here:
+        EliminarCliente ventanaEliminar = new EliminarCliente(this);
+        ventanaEliminar.setVisible(true);
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-    CrearCliente ventanaCrear = new CrearCliente(this); // le pasamos la ventana
+    CrearCliente ventanaCrear = new CrearCliente(this); 
     ventanaCrear.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Seleccionar Archivo CSV de Clientes");
+        int userSelection = fileChooser.showOpenDialog(this);
+  
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+        
+        File fileToLoad = fileChooser.getSelectedFile();
+        String rutaArchivo = fileToLoad.getAbsolutePath();
+        
+
+        String resultado = ClienteController.cargarClientesMasivo(rutaArchivo);
+        
+        JOptionPane.showMessageDialog(this, resultado, "Resultado de Carga Masiva", JOptionPane.INFORMATION_MESSAGE);
+        
+        if (!resultado.contains("ERROR")) { 
+            actualizarTablaClientes(); 
+        }
+    }
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        ActualizarCliente ventanaActualizar = new ActualizarCliente(this);
+        ventanaActualizar.setVisible(true);
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+        int confirmacion = JOptionPane.showConfirmDialog(
+            this, 
+            "¿Está seguro que desea cerrar la sesión?", 
+            "Confirmar Cierre de Sesión", 
+            JOptionPane.YES_NO_OPTION
+    );
+    
+    if (confirmacion == JOptionPane.YES_OPTION) {
+        this.dispose(); 
+      
+        Ventanas.Login login = new Ventanas.Login(); 
+        login.setVisible(true);
+    }
+    }//GEN-LAST:event_jButton7ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -344,13 +518,16 @@ public class VentanaVendedor extends javax.swing.JFrame {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButton7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
+    private javax.swing.JTable jTable3;
     // End of variables declaration//GEN-END:variables
 }

@@ -10,7 +10,7 @@ public class Historial {
     public Historial(String codigoProducto, int cantidad) {
         this.codigoProducto = codigoProducto;
         this.cantidad = cantidad;
-        this.fecha = LocalDate.now().toString(); // fecha de hoy
+        this.fecha = LocalDate.now().toString(); 
     }
 
     public String getCodigoProducto() { return codigoProducto; }

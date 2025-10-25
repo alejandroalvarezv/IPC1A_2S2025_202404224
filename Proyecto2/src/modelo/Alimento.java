@@ -1,10 +1,9 @@
 package modelo;
-
-public class Alimento extends Producto {
+public class Alimento extends ProductoPrecio { 
     private String fechaCaducidad;
 
-    public Alimento(String codigo, String nombre, String material, String fechaCaducidad, int stock) {
-        super(codigo, nombre, "Alimento", material, stock);
+    public Alimento(String codigo, String nombre, String categoria, String fechaCaducidad, int stock, double precio) {
+        super(codigo, nombre, categoria, "Orgánico", stock, precio); 
         this.fechaCaducidad = fechaCaducidad;
     }
 
@@ -18,7 +17,6 @@ public class Alimento extends Producto {
 
     @Override
     public String toString() {
-        return getCodigo() + "," + getNombre() + "," + getCategoria() + "," +
-               getMaterial() + "," + getAtributoEspecifico() + "," + getStock();
+        return toCSV(); 
     }
 }

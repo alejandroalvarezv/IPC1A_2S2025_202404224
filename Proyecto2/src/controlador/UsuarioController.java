@@ -28,7 +28,7 @@ public class UsuarioController {
             String rutaArchivo = "data/usuarios.csv";
 
             try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
-                br.readLine();
+                br.readLine(); 
                 String linea;
                 
                 while ((linea = br.readLine()) != null) {
@@ -72,15 +72,16 @@ public class UsuarioController {
     
         public static void cargarVendedoresMasivo(String rutaArchivo) {
             try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
-                br.readLine(); 
+                br.readLine();
                 String linea;
         
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.split(",");
 
-            if (datos.length != 5) {
-                System.out.println("Error de formato (esperaba 4 campos): " + linea);
-                continue;
+
+            if (datos.length < 4) {
+                 System.out.println("Error de formato (esperaba al menos 4 campos): " + linea);
+                 continue;
             }
 
             String codigo = datos[0].trim();
@@ -112,11 +113,11 @@ public class UsuarioController {
     }
 }
 
-    public static Usuario autenticar(String codigo, String contraseña) {
+    public static Object autenticar(String codigo, String contraseña) {
         for (int i = 0; i < contadorUsuarios; i++) {
             Usuario u = usuarios[i];
             if (u.getCodigo().equals(codigo) && u.getContrasena().equals(contraseña)) {
-                return u;
+                return u; 
             }
         }
         return null; 
@@ -132,7 +133,7 @@ public class UsuarioController {
         }
     }
 
-                if (indiceAEliminar != -1) {
+            if (indiceAEliminar != -1) {
             for (int i = indiceAEliminar; i < contadorUsuarios - 1; i++) {
                 usuarios[i] = usuarios[i + 1];
         }
@@ -145,7 +146,6 @@ public class UsuarioController {
 
     // ------------------- Gestión de Vendedores -------------------
     
-    // --- BUSCAR USUARIO ---
     public static Usuario buscarUsuarioPorCodigo(String codigo) {    
         for (int i = 0; i < contadorUsuarios; i++) {
             Usuario u = usuarios[i];
@@ -156,7 +156,6 @@ public class UsuarioController {
         return null;
     }
     
-    // --- ELIMINAR USUARIO (Base) ---
     public static boolean eliminarUsuario(String codigo) {
         int indiceAEliminar = -1;
         
@@ -179,7 +178,6 @@ public class UsuarioController {
         return false;
     }
 
-    // --- GESTIÓN DE VENDEDORES ---
 
     public static boolean crearVendedor(String codigo, String nombre, String genero, String contraseña) {
         if (buscarUsuarioPorCodigo(codigo) != null) {
@@ -231,7 +229,6 @@ public class UsuarioController {
         }
     }
     
-    // --- OBTENER VENDEDORES PARA LA TABLA ---
     
     public static Vendedor[] obtenerVendedores() {
         int contadorVendedores = 0;

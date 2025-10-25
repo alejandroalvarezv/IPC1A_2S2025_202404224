@@ -1,7 +1,9 @@
 package Ventanas;
-
 import javax.swing.JOptionPane;
 import controlador.UsuarioController;
+import modelo.Administrador; 
+import modelo.Vendedor;       
+import modelo.Cliente;        
 import modelo.Usuario;
 
 public class Login extends javax.swing.JFrame {
@@ -27,6 +29,7 @@ public class Login extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -56,6 +59,13 @@ public class Login extends javax.swing.JFrame {
             }
         });
 
+        jButton3.setText("Mostrar Datos del Estudiante");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -77,9 +87,12 @@ public class Login extends javax.swing.JFrame {
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 98, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(97, 97, 97)
-                        .addComponent(jButton1)
-                        .addGap(34, 34, 34)
-                        .addComponent(jButton2)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton3)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton1)
+                                .addGap(34, 34, 34)
+                                .addComponent(jButton2)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -99,7 +112,9 @@ public class Login extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
-                .addContainerGap(32, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
+                .addComponent(jButton3)
+                .addGap(22, 22, 22))
         );
 
         pack();
@@ -110,37 +125,58 @@ public class Login extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
         System.exit(0);
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
        
-    String codigo = jTextField1.getText();
-    String contrasena = new String(jPasswordField1.getPassword());
+        String codigo = jTextField1.getText();
+        String contrasena = new String(jPasswordField1.getPassword());
 
-    UsuarioController.cargarUsuarios();
-    Usuario usuario = UsuarioController.autenticar(codigo, contrasena);
+        UsuarioController.cargarUsuarios();
+        
+        Object usuarioAutenticado = UsuarioController.autenticar(codigo, contrasena);
 
-    if (usuario != null) {
-        if (usuario.getTipo().equals("Administrador")) {Administrador adminView = new Administrador();
-            adminView.setVisible(true);
+        if (usuarioAutenticado != null) {
+                        
+            if (usuarioAutenticado instanceof modelo.Administrador) {
+                Ventanas.Administrador adminView = new Ventanas.Administrador();
+                adminView.setVisible(true);
+                this.dispose(); 
+                
+            } else if (usuarioAutenticado instanceof modelo.Vendedor) {
+                modelo.Vendedor vendedor = (modelo.Vendedor) usuarioAutenticado;
+    
+            VentanaVendedor vendedorView = new VentanaVendedor(vendedor); 
+    
+            vendedorView.setVisible(true);
             
-            this.dispose(); 
-            
-        } else if (usuario.getTipo().equals("Vendedor")) {VentanaVendedor adminView = new VentanaVendedor();
-            adminView.setVisible(true);
             this.dispose();
             
+            } else if (usuarioAutenticado instanceof modelo.Cliente) {
+                modelo.Cliente cliente = (modelo.Cliente) usuarioAutenticado; 
+                VentanaCliente clienteView = new VentanaCliente(cliente); 
+                clienteView.setVisible(true);
+                this.dispose();
+            
+            } else {
+                 JOptionPane.showMessageDialog(this, 
+                         "Rol de usuario no implementado o desconocido: " + usuarioAutenticado.getClass().getSimpleName(), 
+                         "Error de Rol", 
+                         JOptionPane.ERROR_MESSAGE);
+            }
+
         } else {
-             JOptionPane.showMessageDialog(this, "Rol de usuario no implementado: " + usuario.getTipo());
+            JOptionPane.showMessageDialog(this, "Código o contraseña incorrectos", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-    } else {
-        JOptionPane.showMessageDialog(this, "Código o contraseña incorrectos", "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
+   
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    DatosEstudiante infoEstudiante = new DatosEstudiante();
+    infoEstudiante.setVisible(true);
+    infoEstudiante.setLocationRelativeTo(null); 
+    }//GEN-LAST:event_jButton3ActionPerformed
     
     /**
      * @param args the command line arguments
@@ -170,6 +206,7 @@ public class Login extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

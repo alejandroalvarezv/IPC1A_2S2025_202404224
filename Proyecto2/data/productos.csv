@@ -1,5 +1,4 @@
-Codigo,Nombre,Categoria,Material,AtributoEspecifico,Stock
-asd12,LLantas,Generales,Caucho,,0
-PR-001,Computadora,Tecnologia,24,,0
-PR-003,Laptop,Tecnologia,36,,0
-asd1,Pan,Alimento,Orgánico,12/12/2025,1
+Codigo,Nombre,Categoria,Material,AtributoEspecifico,Stock,Precio
+PR-001,Panito,Alimento,Orgánico,12/12/2025,10,0.0
+PR-002,Llanta,Generales,Cauchito,,22,1.0
+PR-003,Telefono,Tecnología,Técnico,5,11,1.0

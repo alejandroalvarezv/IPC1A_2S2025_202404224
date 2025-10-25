@@ -1,10 +1,9 @@
 package modelo;
+public class Tecnologia extends ProductoPrecio { 
+    private int garantia; 
 
-public class Tecnologia extends Producto {
-    private int garantia; // meses
-
-    public Tecnologia(String codigo, String nombre, String material, int garantia, int stock) {
-        super(codigo, nombre, "Tecnología", material, stock);
+    public Tecnologia(String codigo, String nombre, String categoria, int garantia, int stock, double precio) {
+        super(codigo, nombre, categoria, "Técnico", stock, precio); 
         this.garantia = garantia;
     }
 
@@ -13,12 +12,11 @@ public class Tecnologia extends Producto {
 
     @Override
     public String getAtributoEspecifico() {
-        return garantia + " meses";
+        return String.valueOf(garantia); 
     }
 
     @Override
     public String toString() {
-        return getCodigo() + "," + getNombre() + "," + getCategoria() + "," +
-               getMaterial() + "," + getAtributoEspecifico() + "," + getStock();
+        return toCSV();
     }
 }

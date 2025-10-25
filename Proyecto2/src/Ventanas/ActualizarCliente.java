@@ -1,13 +1,56 @@
 package Ventanas;
+import javax.swing.*;
+import modelo.Cliente; 
+import controlador.ClienteController;
+import java.util.logging.Logger;
+import Ventanas.VentanaVendedor;
+
 public class ActualizarCliente extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ActualizarCliente.class.getName());
+    
+    
+    private VentanaVendedor ventanaPadre;
+    private Cliente clienteCargado;
 
-    /**
-     * Creates new form ActualizarCliente
-     */
+    
+    public ActualizarCliente(VentanaVendedor parent) {
+        this(); 
+        this.ventanaPadre = parent; 
+        setTitle("Actualizar Cliente");
+    }
+    
+    
     public ActualizarCliente() {
         initComponents();
+        this.setLocationRelativeTo(null);
+        habilitarCamposEdicion(false); 
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
+    
+    
+    
+    
+    private void habilitarCamposEdicion(boolean habilitar) {
+        jTextField2.setEnabled(habilitar); 
+        jTextField3.setEnabled(habilitar); 
+        jTextField4.setEnabled(habilitar); 
+        jTextField5.setEnabled(habilitar);
+        jButton2.setEnabled(habilitar);   
+    }
+
+    private void limpiarCamposEdicion() {
+        jTextField2.setText("");
+        jTextField3.setText("");
+        jTextField4.setText("");
+        jTextField5.setText("");
+    }
+
+    private void limpiarTodo() {
+        jTextField1.setText("");
+        limpiarCamposEdicion();
+        habilitarCamposEdicion(false);
+        this.clienteCargado = null;
     }
 
     /**
@@ -55,8 +98,18 @@ public class ActualizarCliente extends javax.swing.JFrame {
         });
 
         jButton1.setText("Buscar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Actualizar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Cancelar");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
@@ -146,6 +199,76 @@ public class ActualizarCliente extends javax.swing.JFrame {
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         this.dispose();
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        String codigo = jTextField1.getText().trim();
+        if (codigo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el código del cliente a buscar.", "Error de Búsqueda", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        controlador.UsuarioController.cargarUsuarios(); 
+        Cliente cliente = ClienteController.buscarClientePorCodigo(codigo); 
+
+        if (cliente != null) {
+            this.clienteCargado = cliente; 
+            
+            jTextField2.setText(cliente.getNombre());
+            jTextField3.setText(ClienteController.getGenero(codigo)); 
+            jTextField4.setText(ClienteController.getCumpleaños(codigo)); 
+            jTextField5.setText(cliente.getContrasena()); 
+
+            habilitarCamposEdicion(true); 
+            JOptionPane.showMessageDialog(this, "Cliente encontrado. Modifique los datos y presione Actualizar.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            this.clienteCargado = null;
+            limpiarCamposEdicion();
+            habilitarCamposEdicion(false);
+            JOptionPane.showMessageDialog(this, "Cliente con código " + codigo + " no encontrado.", "Error de Búsqueda", JOptionPane.ERROR_MESSAGE);
+        }
+    
+    
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        if (this.clienteCargado == null) {
+            JOptionPane.showMessageDialog(this, "Primero debe buscar un cliente para actualizar.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String codigo = this.clienteCargado.getCodigo();
+        String nuevoNombre = jTextField2.getText().trim();
+        String nuevoGenero = jTextField3.getText().trim();
+        String nuevoCumple = jTextField4.getText().trim();
+        String nuevaContrasena = jTextField5.getText().trim();
+        
+        if (nuevoNombre.isEmpty() || nuevaContrasena.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El nombre y la contraseña no pueden estar vacíos.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean exito = ClienteController.actualizarCliente(
+            codigo, 
+            nuevoNombre, 
+            nuevoGenero, 
+            nuevoCumple, 
+            nuevaContrasena
+        );
+        
+        if (exito) {
+            JOptionPane.showMessageDialog(this, "Datos del cliente actualizados correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            
+            if (this.ventanaPadre != null) {
+                this.ventanaPadre.actualizarTablaClientes();
+            }
+            
+            this.dispose(); 
+            
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al actualizar el cliente. Revise su controlador.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments

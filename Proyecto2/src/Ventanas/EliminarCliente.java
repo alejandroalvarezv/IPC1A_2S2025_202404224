@@ -1,11 +1,28 @@
 package Ventanas;
+import javax.swing.*;
+import controlador.ClienteController;
+import java.util.logging.Logger;
+
 public class EliminarCliente extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(EliminarCliente.class.getName());
 
+    
+    private VentanaVendedor ventanaPadre;
     /**
      * Creates new form EliminarCliente
      */
+    
+    public EliminarCliente(VentanaVendedor parent) {
+        this(); 
+        this.ventanaPadre = parent;
+        this.setLocationRelativeTo(null);
+        setTitle("Eliminar Cliente");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    }
+    
+    
+    
     public EliminarCliente() {
         initComponents();
     }
@@ -32,6 +49,11 @@ public class EliminarCliente extends javax.swing.JFrame {
         jLabel2.setText("Código");
 
         jButton1.setText("Eliminar");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Cancelar");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -84,6 +106,39 @@ public class EliminarCliente extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         this.dispose();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        String codigo = jTextField1.getText().trim();
+        
+        if (codigo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Ingrese el código del cliente a eliminar.", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int confirmacion = JOptionPane.showConfirmDialog(this, 
+            "¿Está seguro que desea eliminar el cliente con código: " + codigo + "?", 
+            "Confirmar Eliminación", 
+            JOptionPane.YES_NO_OPTION,
+            JOptionPane.QUESTION_MESSAGE);
+
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            
+            boolean exito = ClienteController.eliminarCliente(codigo);
+
+            if (exito) {
+                JOptionPane.showMessageDialog(this, "Cliente " + codigo + " eliminado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                
+                if (this.ventanaPadre != null) {
+                    this.ventanaPadre.actualizarTablaClientes();
+                }
+                
+                this.dispose();
+                
+            } else {
+                JOptionPane.showMessageDialog(this, "Cliente con código " + codigo + " no encontrado.", "Error de Eliminación", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments

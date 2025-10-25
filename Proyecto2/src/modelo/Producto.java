@@ -1,11 +1,10 @@
 package modelo;
-
 public class Producto {
     private String codigo;
     private String nombre;
     private String categoria;
     private String material;
-    private int stock; 
+    private int stock;    
 
     public Producto(String codigo, String nombre, String categoria, String material, int stock) {
         this.codigo = codigo;
@@ -25,13 +24,24 @@ public class Producto {
     public int getStock() { return stock; }
     public void setStock(int stock) { this.stock = stock; }
 
-    public String getAtributoEspecifico() { 
-        return ""; 
+    public String getAtributoEspecifico() {    
+        return "";    
     }
 
+
+    public String toCSVBase() {
+        return codigo + "," + 
+               nombre + "," + 
+               categoria + "," + 
+               material + "," + 
+               getAtributoEspecifico() + "," + 
+               stock;
+    }
+    
+
     public String toCSV() {
-        return codigo + "," + nombre + "," + categoria + "," + material + "," + getAtributoEspecifico() + "," + stock;
-    }   
+        return toCSVBase() + "," + "0.0";
+    }    
 
     @Override
     public String toString() {

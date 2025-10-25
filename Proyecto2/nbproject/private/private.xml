@@ -4,40 +4,48 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/VentanaVendedor.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/AgregarStock.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Producto.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/data/productos.csv</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/data/usuarios.csv</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/ActualizarProducto.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/ActualizarVendedor.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/Administrador.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/CargaMasivaProductos.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/CargaMasivaVendedores.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/CrearProducto.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/CrearVendedor.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/EliminarProducto.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/EliminarVendedor.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/Login.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/controlador/ProductoController.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/controlador/UsuarioController.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Administrador.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Alimento.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/ButtonColumn.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Cliente.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Proyecto2.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Tecnologia.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/ButtonColumn2.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/controlador/HistorialController.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Historial.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/historial.txt</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Vendedor.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Usuario.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/data/stock2.csv</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Ingreso.java</file>
-            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/CrearCliente.java</file>
             <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/controlador/ClienteController.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/CrearCliente.java</file>
             <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/ActualizarCliente.java</file>
             <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/EliminarCliente.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/controlador/PedidoController.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Pedido.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Vendedor.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/Administrador.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/controlador/ProductoController.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/ButtonColumn3.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/VentanaCliente.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Cliente.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Producto.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/ProductoPrecio.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/data/productos.csv</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/data/stock2.csv</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/Login.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/controlador/UsuarioController.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/data/usuarios.csv</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/ActualizarProducto.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/CrearVendedor.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/historial.txt</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/CrearProducto.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Administrador.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Alimento.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Tecnologia.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/clientes.csv</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/ComprarCarrito.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/AgregarStock.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/DatosEstudiante.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/ActualizarVendedor.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/CargaMasivaProductos.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/CargaMasivaVendedores.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/EliminarProducto.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/Ventanas/EliminarVendedor.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/controlador/HistorialController.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/ButtonColumn.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/ButtonColumn2.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Historial.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Ingreso.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Proyecto2.java</file>
+            <file>file:/C:/Users/aleja/Documents/progra2/IPC1A_2S2025_202404224/Proyecto2/src/modelo/Usuario.java</file>
         </group>
     </open-files>
 </project-private>
