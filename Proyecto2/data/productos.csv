@@ -1,4 +1,5 @@
 Codigo,Nombre,Categoria,Material,AtributoEspecifico,Stock,Precio
-PR-001,Panito,Alimento,Orgánico,12/12/2025,10,0.0
+PR-001,Panito,Alimento,Orgánico,12/12/2025,5,0.0
 PR-002,Llanta,Generales,Cauchito,,22,1.0
 PR-003,Telefono,Tecnología,Técnico,5,11,1.0
+

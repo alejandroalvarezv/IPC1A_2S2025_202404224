@@ -112,18 +112,18 @@ public class VentanaVendedor extends javax.swing.JFrame {
     } 
             
         public void actualizarTablaPedidos() {
-    DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
-    model.setRowCount(0); 
-
-    Pedido[] todosLosPedidos = PedidoController.obtenerPedidosActivos();
-    DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-    if (todosLosPedidos == null) return;
+            DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
+            model.setRowCount(0); 
     
-    for (Pedido p : todosLosPedidos) {
-        if (p != null && p.getEstado().equals("Pendiente")) {
-            Cliente cliente = ClienteController.buscarClientePorCodigo(p.getCodigoCliente());
-            String nombreCliente = (cliente != null) ? cliente.getNombre() : "Desconocido";
+            Pedido[] todosLosPedidos = PedidoController.obtenerPedidosActivos();
+            DateTimeFormatter displayFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+                if (todosLosPedidos == null) return;
+    
+            for (Pedido p : todosLosPedidos) {
+                if (p != null && p.getEstado().equals("Pendiente")) {
+                    Cliente cliente = ClienteController.buscarClientePorCodigo(p.getCodigoCliente());
+                    String nombreCliente = (cliente != null) ? cliente.getNombre() : "Desconocido";
 
             model.addRow(new Object[]{
                 p.getIdPedido(),
@@ -415,23 +415,30 @@ public class VentanaVendedor extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
          JFileChooser fileChooser = new JFileChooser();
-    int seleccion = fileChooser.showOpenDialog(this);
-    if (seleccion == JFileChooser.APPROVE_OPTION) {
-        String rutaArchivo = fileChooser.getSelectedFile().getAbsolutePath();
-        boolean exito = ProductoController.actualizarStockMasivo(rutaArchivo);
-        if (exito) {
-            JOptionPane.showMessageDialog(this, "Stock actualizado correctamente");
-            actualizarTablaProductos();
-        } else {
-            JOptionPane.showMessageDialog(this, "Error al actualizar el stock");
-        }
-    }
+         fileChooser.setDialogTitle("Seleccionar Archivo CSV de Productos");
+         
+         int seleccion = fileChooser.showOpenDialog(this);
+         
+         if (seleccion == JFileChooser.APPROVE_OPTION) {
+             String rutaArchivo = fileChooser.getSelectedFile().getAbsolutePath();
+             
+
+             boolean exito = ProductoController.cargarProductosMasivo(rutaArchivo); 
+             
+             if (exito) {
+                 JOptionPane.showMessageDialog(this, "Carga masiva de productos completada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                 actualizarTablaProductos();
+             } else {
+                 JOptionPane.showMessageDialog(this, "Hubo errores durante la carga masiva. Revise la consola para más detalles.", "Error de Carga", JOptionPane.ERROR_MESSAGE);
+             }
+         }
+    
 
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        AgregarStock ventanaStock = new AgregarStock(this, vendedorActual);
-        ventanaStock.setVisible(true);
+        Ventanas.AgregarStock agregarStock = new Ventanas.AgregarStock(this, vendedorActual); 
+        agregarStock.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
@@ -445,24 +452,8 @@ public class VentanaVendedor extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Seleccionar Archivo CSV de Clientes");
-        int userSelection = fileChooser.showOpenDialog(this);
-  
-            if (userSelection == JFileChooser.APPROVE_OPTION) {
-        
-        File fileToLoad = fileChooser.getSelectedFile();
-        String rutaArchivo = fileToLoad.getAbsolutePath();
-        
-
-        String resultado = ClienteController.cargarClientesMasivo(rutaArchivo);
-        
-        JOptionPane.showMessageDialog(this, resultado, "Resultado de Carga Masiva", JOptionPane.INFORMATION_MESSAGE);
-        
-        if (!resultado.contains("ERROR")) { 
-            actualizarTablaClientes(); 
-        }
-    }
+        CargaMasivaClientes cargaClientes = new CargaMasivaClientes(this); // 'this' es la referencia a VentanaVendedor
+    cargaClientes.setVisible(true);
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed

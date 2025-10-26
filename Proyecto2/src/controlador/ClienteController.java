@@ -1,6 +1,8 @@
 package controlador;
 import modelo.Cliente;
 import java.io.*; 
+import java.util.HashMap;
+import java.util.Map;
 
 public class ClienteController {
 
@@ -17,13 +19,17 @@ public class ClienteController {
         
         try (BufferedReader br = new BufferedReader(new FileReader(ARCHIVO_CLIENTES))) {
             String linea;
+            
             while ((linea = br.readLine()) != null) {
+                if (linea.trim().isEmpty()) continue; 
+                
                 if (contador >= MAX_CLIENTES) {
                     break;
                 }
 
                 String[] datos = linea.split(",");
-                if (datos.length == 6) { 
+                
+                if (datos.length >= 6) { 
                     Cliente c = new Cliente(datos[0], datos[1], datos[2]); 
                     
                     clientes[contador] = c;
@@ -31,6 +37,8 @@ public class ClienteController {
                     cumpleaños[contador] = datos[4];
                     vendedores[contador] = datos[5];
                     contador++;
+                } else {
+                    System.err.println("❌ Cliente Ignorado (Columnas insuficientes): Encontró " + datos.length + " campos. Línea: " + linea);
                 }
             }
         } catch (FileNotFoundException e) {
@@ -41,7 +49,6 @@ public class ClienteController {
         }
     }
     
-
     public static void guardarClientesEnArchivo() {
         try (PrintWriter pw = new PrintWriter(new FileWriter(ARCHIVO_CLIENTES))) {
             
@@ -58,48 +65,79 @@ public class ClienteController {
             System.out.println("Error al guardar los clientes en el archivo.");
         }
     }
-    
 
-    
     public static String cargarClientesMasivo(String rutaArchivo) {
         int clientesCargados = 0;
-        int clientesOmitidos = 0;
-        StringBuilder errores = new StringBuilder();
+        int clientesRechazados = 0;
         
         cargarClientesDesdeArchivoInterno(); 
         
         try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
             String linea;
-            int numLinea = 0;
+            
+            if ((linea = br.readLine()) == null) {
+                return "ERROR: Archivo CSV vacío.";
+            }
+            
+            String[] headers = linea.split(",");
+            Map<String, Integer> colIndices = new HashMap<>();
+            
+            for (int i = 0; i < headers.length; i++) {
+                colIndices.put(headers[i].trim().toLowerCase(), i);
+            }
+
+            if (!colIndices.containsKey("codigo") || !colIndices.containsKey("nombre") || 
+                !colIndices.containsKey("genero") || !colIndices.containsKey("cumpleanos") ||
+                !colIndices.containsKey("contrasena")) 
+            {
+                return "ERROR: El archivo debe contener las columnas: Codigo, Nombre, Genero, Contrasena y Cumpleanos.";
+            }
             
             while ((linea = br.readLine()) != null) {
-                numLinea++;
                 if (linea.trim().isEmpty()) continue;
                 
-                String[] datos = linea.split(",");
+                String[] campos = linea.split(",");
                 
-                if (datos.length != 5) { /* ... */ clientesOmitidos++; continue; }
+                if (campos.length < colIndices.size()) {
+                     clientesRechazados++;
+                     continue;
+                }
                 
-                String codigo = datos[0].trim();
-                String nombre = datos[1].trim();
-                String genero = datos[2].trim();
-                String cumpleanos = datos[3].trim();
-                String contrasena = datos[4].trim();
-                
-                if (codigo.isEmpty() || nombre.isEmpty() || contrasena.isEmpty()) { /* ... */ clientesOmitidos++; continue; }
-                if (buscarClientePorCodigo(codigo) != null) { /* ... */ clientesOmitidos++; continue; }
-                if (contador >= MAX_CLIENTES) { /* ... */ clientesOmitidos++; break; }
+                try {
+                    String codigo = campos[colIndices.get("codigo")].trim();
+                    String nombre = campos[colIndices.get("nombre")].trim();
+                    String genero = campos[colIndices.get("genero")].trim();
+                    String cumpleanos = campos[colIndices.get("cumpleanos")].trim();
+                    String contrasena = campos[colIndices.get("contrasena")].trim();
+                    
+                    if (codigo.isEmpty() || nombre.isEmpty() || contrasena.isEmpty()) {
+                        clientesRechazados++;
+                        continue;
+                    }
+                    if (buscarClienteEnArray(codigo) != null) { 
+                         clientesRechazados++; 
+                         continue;
+                    }
+                    if (contador >= MAX_CLIENTES) { 
+                        clientesRechazados++;
+                        break; 
+                    }
 
-                Cliente nuevoCliente = new Cliente(codigo, contrasena, nombre); 
-                
-                clientes[contador] = nuevoCliente;
-                generos[contador] = genero;
-                cumpleaños[contador] = cumpleanos;
-                vendedores[contador] = "SISTEMA_CSV"; 
-                contador++;
-                clientesCargados++;
+                    Cliente nuevoCliente = new Cliente(codigo, contrasena, nombre); 
+                    
+                    clientes[contador] = nuevoCliente;
+                    generos[contador] = genero;
+                    cumpleaños[contador] = cumpleanos;
+                    vendedores[contador] = "SISTEMA_CSV"; 
+                    contador++;
+                    clientesCargados++;
 
-                UsuarioController.agregarUsuario(nuevoCliente);
+                    UsuarioController.agregarUsuario(nuevoCliente); 
+                    
+                } catch (Exception e) {
+                    System.err.println("Error al procesar línea de cliente: " + linea + " | Error: " + e.getMessage());
+                    clientesRechazados++;
+                }
             }
             
             guardarClientesEnArchivo(); 
@@ -111,16 +149,22 @@ public class ClienteController {
             return "ERROR de lectura del archivo: " + e.getMessage();
         }
         
-        String resumen = String.format("Carga finalizada:\n- Clientes cargados con éxito: %d\n- Clientes omitidos (errores): %d", 
-                                        clientesCargados, clientesOmitidos);
+        String resumen = String.format("Carga finalizada:\n- Clientes cargados con éxito: %d\n- Clientes omitidos (duplicados/errores): %d", 
+                                       clientesCargados, clientesRechazados);
         
-        if (clientesOmitidos > 0) {
-            resumen += "\n\n--- DETALLE DE ERRORES ---\n" + errores.toString();
-        }
         return resumen;
     }
 
 
+
+    private static Cliente buscarClienteEnArray(String codigo) {
+        for (int i = 0; i < contador; i++) {
+            if (clientes[i].getCodigo().equals(codigo)) {
+                return clientes[i];
+            }
+        }
+        return null;
+    }
     
     public static Cliente buscarClientePorCodigo(String codigo) {
         cargarClientesDesdeArchivoInterno(); 
@@ -218,7 +262,7 @@ public class ClienteController {
 
         return false; 
     }
-                    
+                        
 
     public static String getGenero(String codigo) {
         cargarClientesDesdeArchivoInterno(); 

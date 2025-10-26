@@ -12,6 +12,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.logging.Level;
+import javax.swing.JOptionPane;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 
@@ -74,7 +77,7 @@ public class ProductoController {
 
         try (BufferedReader br = new BufferedReader(new FileReader(ARCHIVO_PRODUCTOS))) {
             String linea;
-            br.readLine(); 
+            br.readLine(); // Saltar cabecera
 
             while ((linea = br.readLine()) != null && contadorProductos < productos.length) {
                 String[] partes = linea.split(",");
@@ -90,7 +93,7 @@ public class ProductoController {
                 String material = partes[3].trim();
                 String atributoEspecifico = partes[4].trim(); 
                 int stock = 0;
-                double precio = 0.0;
+                double precio = 0.0; 
 
                 try {
                     stock = Integer.parseInt(partes[5].trim());
@@ -114,7 +117,6 @@ public class ProductoController {
                     String fechaCaducidad = atributoEspecifico;
                     nuevoProducto = new Alimento(codigo, nombre, categoria, fechaCaducidad, stock, precio);
                 } else {
-                    // Producto General (usa 'material' como atributo no específico)
                     nuevoProducto = new ProductoPrecio(codigo, nombre, categoria, material, stock, precio);
                 }
 
@@ -161,15 +163,107 @@ public class ProductoController {
 
 
     public static boolean cargarProductosMasivo(String ruta) {
-        if (!Files.exists(Paths.get(ruta))) {
-            System.out.println("Archivo no existe: " + ruta);
+    if (!Files.exists(Paths.get(ruta))) {
+        JOptionPane.showMessageDialog(null,
+                "El archivo CSV no existe: " + ruta,
+                "Error de archivo", JOptionPane.ERROR_MESSAGE);
+        return false;
+    }
+
+    int productosAgregados = 0;
+
+    try (BufferedReader br = new BufferedReader(new FileReader(ruta))) {
+        String cabecera = br.readLine();
+        if (cabecera == null) {
+            JOptionPane.showMessageDialog(null, "El archivo CSV está vacío.", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
+        String[] columnas = cabecera.split(",", -1);
+        Map<String, Integer> indices = new HashMap<>();
+
+        for (int i = 0; i < columnas.length; i++) {
+            String nombre = columnas[i].trim().toLowerCase();
+            indices.put(nombre, i);
+        }
+
+        String linea;
+        while ((linea = br.readLine()) != null && contadorProductos < productos.length) {
+            String[] partes = linea.split(",", -1);
+
+            String codigo = getValue(partes, indices, "codigo");
+            String nombre = getValue(partes, indices, "nombre");
+            String categoria = getValue(partes, indices, "categoria");
+            String material = getValue(partes, indices, "material");
+            String atributo = getValue(partes, indices, "atributoespecifico");
+            String stockStr = getValue(partes, indices, "stock");
+            String precioStr = getValue(partes, indices, "precio"); // 🚀 Se recupera la columna 'precio'
+
+            if (codigo.isEmpty() || nombre.isEmpty()) {
+                logger.log(Level.WARNING, "Línea omitida (sin código o nombre): {0}", linea);
+                continue;
+            }
+
+            int stock = 0;
+            double precio = 0.0;
+            try {
+                stock = Integer.parseInt(stockStr.isEmpty() ? "0" : stockStr);
+                precio = Double.parseDouble(precioStr.isEmpty() ? "0" : precioStr); // ✅ CORRECTO: Se parsea el precio
+            } catch (NumberFormatException e) {
+                logger.log(Level.WARNING, "Error en valores numéricos: {0}", linea);
+            }
+
+            Producto nuevoProducto;
+
+            if (categoria.equalsIgnoreCase("tecnologia") || categoria.equalsIgnoreCase("tecnología")) {
+                int garantia = 0;
+                try {
+                    garantia = Integer.parseInt(atributo.isEmpty() ? "0" : atributo);
+                } catch (NumberFormatException e) {
+                    logger.log(Level.WARNING, "Garantía inválida para {0}, se usará 0.", codigo);
+                }
+                nuevoProducto = new Tecnologia(codigo, nombre, categoria, garantia, stock, precio);
+            } else if (categoria.equalsIgnoreCase("alimento") || categoria.equalsIgnoreCase("alimentos")) {
+                nuevoProducto = new Alimento(codigo, nombre, categoria, atributo.isEmpty() ? "N/A" : atributo, stock, precio);
+            } else {
+                nuevoProducto = new ProductoPrecio(codigo, nombre, categoria, material.isEmpty() ? "N/A" : material, stock, precio);
+            }
+
+            if (buscarProductoPorCodigo(codigo) == null) {
+                productos[contadorProductos++] = nuevoProducto;
+                productosAgregados++;
+            } else {
+                logger.log(Level.INFO, "Producto duplicado omitido: {0}", codigo);
+            }
+        }
+
+        guardarProductos();
+        recargarProductos();
+
+        JOptionPane.showMessageDialog(null,
+                "Carga masiva completada. Se agregaron " + productosAgregados + " productos.",
+                "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        logger.log(Level.INFO, "Carga masiva completada. Total: {0}", productosAgregados);
+
+        return true;
+
+    } catch (IOException e) {
+        logger.log(Level.SEVERE, "Error al leer el archivo CSV: {0}", e.getMessage());
+        JOptionPane.showMessageDialog(null,
+                "Error al leer el archivo CSV:\n" + e.getMessage(),
+                "Error de carga", JOptionPane.ERROR_MESSAGE);
         return false;
     }
+}
+
+        private static String getValue(String[] partes, Map<String, Integer> indices, String key) {
+            Integer idx = indices.get(key.toLowerCase());
+            
+            if (idx == null || idx >= partes.length) return "";
+                return partes[idx].trim();
+}
     
-   
+    
     public static void guardarProductos() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(ARCHIVO_PRODUCTOS))) {
             bw.write("Codigo,Nombre,Categoria,Material,AtributoEspecifico,Stock,Precio");
@@ -215,8 +309,80 @@ public class ProductoController {
     
     
     public static boolean actualizarStockMasivo(String rutaArchivo) {
-        return false;
+        if (!Files.exists(Paths.get(rutaArchivo))) {
+            logger.log(Level.SEVERE, "El archivo CSV para actualización de stock no existe: {0}", rutaArchivo);
+            return false;
+        }
+
+        int stockActualizado = 0;
+        boolean tuvoErrores = false;
+        
+        if (!productosCargados) {
+            cargarProductos();
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
+            String cabecera = br.readLine();
+            if (cabecera == null) {
+                logger.log(Level.WARNING, "El archivo CSV está vacío: {0}", rutaArchivo);
+                return false;
+            }
+
+            String[] columnas = cabecera.split(",", -1);
+            Map<String, Integer> indices = new HashMap<>();
+
+            for (int i = 0; i < columnas.length; i++) {
+                String nombre = columnas[i].trim().toLowerCase();
+                indices.put(nombre, i);
+            }
+            
+            if (!indices.containsKey("codigo") || !indices.containsKey("stock")) {
+                logger.log(Level.SEVERE, "El CSV debe contener al menos las columnas 'Codigo' y 'Stock'.");
+                return false;
+            }
+
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(",", -1);
+
+                String codigo = getValue(partes, indices, "codigo");
+                String stockStr = getValue(partes, indices, "stock");
+
+                if (codigo.isEmpty() || stockStr.isEmpty()) {
+                    logger.log(Level.WARNING, "Línea omitida (sin código o stock): {0}", linea);
+                    tuvoErrores = true;
+                    continue;
+                }
+
+                int nuevoStock = 0;
+                try {
+                    nuevoStock = Integer.parseInt(stockStr);
+                } catch (NumberFormatException e) {
+                    logger.log(Level.WARNING, "Error: Stock inválido '{0}' para producto {1}.", new Object[]{stockStr, codigo});
+                    tuvoErrores = true;
+                    continue;
+                }
+                
+                if (actualizarStock(codigo, nuevoStock)) {
+                    stockActualizado++;
+                } else {
+                    logger.log(Level.INFO, "Producto no encontrado en el sistema, no se actualizó el stock: {0}", codigo);
+                    tuvoErrores = true;
+                }
+            }
+            
+            guardarProductos(); 
+            recargarProductos(); 
+
+            logger.log(Level.INFO, "Actualización masiva de stock completada. Productos actualizados: {0}", stockActualizado);
+            return !tuvoErrores; 
+
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error al leer el archivo CSV de stock: " + e.getMessage(), e);
+            return false;
+        }
     }
+    
 
     public static boolean generarCSVStockActualizado(String rutaSalida) {
         return false;
@@ -289,5 +455,5 @@ public class ProductoController {
         }
         
         guardarProductos();
-    }            
+    }           
 }

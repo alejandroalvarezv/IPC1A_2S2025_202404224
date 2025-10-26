@@ -145,6 +145,7 @@ public class Administrador extends javax.swing.JFrame {
         jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
+        jButton10 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -301,15 +302,23 @@ public class Administrador extends javax.swing.JFrame {
 
         jTabbedPaneModulos.addTab("Productos", jPanel2);
 
+        jButton10.setText("Productos mas Vendidos");
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 856, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(92, 92, 92)
+                .addComponent(jButton10)
+                .addContainerGap(604, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 439, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(67, 67, 67)
+                .addComponent(jButton10)
+                .addContainerGap(349, Short.MAX_VALUE))
         );
 
         jTabbedPaneModulos.addTab("Reportes", jPanel3);
@@ -397,11 +406,7 @@ public class Administrador extends javax.swing.JFrame {
         );
 
         if (confirmacion == JOptionPane.YES_OPTION) {
-            // 1. Cierra la ventana actual del Cliente
             this.dispose();
-
-            // 2. Crea y muestra una nueva instancia de la ventana de Login
-            // Esto devuelve al usuario a la pantalla de inicio
             Ventanas.Login login = new Ventanas.Login();
             login.setVisible(true);
         }
@@ -431,6 +436,7 @@ public class Administrador extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
