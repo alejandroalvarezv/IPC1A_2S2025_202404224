@@ -1,5 +1,9 @@
 package modelo;
-public class Tecnologia extends ProductoPrecio { 
+import java.io.Serializable;
+
+public class Tecnologia extends ProductoPrecio implements Serializable { 
+    private static final long serialVersionUID = 1L;
+    
     private int garantia; 
 
     public Tecnologia(String codigo, String nombre, String categoria, int garantia, int stock, double precio) {
@@ -17,6 +21,14 @@ public class Tecnologia extends ProductoPrecio {
 
     @Override
     public String toString() {
-        return toCSV();
+        return "Tecnologia{" +
+                "codigo='" + getCodigo() + '\'' +
+                ", nombre='" + getNombre() + '\'' +
+                ", categoria='" + getCategoria() + '\'' +
+                ", material='" + getMaterial() + '\'' +
+                ", stock=" + getStock() +
+                ", precio=" + getPrecio() +
+                ", garantia=" + garantia + " meses" +
+                '}';
     }
 }

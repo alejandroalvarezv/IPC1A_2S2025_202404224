@@ -1,18 +1,12 @@
 package modelo;
-public class ProductoPrecio extends Producto {
-    private double precio;
+import java.io.Serializable;
 
-    public ProductoPrecio(String codigo, String nombre, String categoria, String material, int stock, double precio) {
-        super(codigo, nombre, categoria, material, stock); 
-        this.precio = precio;
-    }
-
-    public double getPrecio() { return precio; }
-    public void setPrecio(double precio) { this.precio = precio; }
-
+public class ProductoPrecio extends Producto implements Serializable {
+    private static final long serialVersionUID = 1L;
     
-    @Override
-    public String toCSV() {
-        return toCSVBase() + "," + this.precio;
+    
+    public ProductoPrecio(String codigo, String nombre, String categoria, String material, int stock, double precio) {
+        super(codigo, nombre, categoria, material, stock, precio); 
     }
+
 }

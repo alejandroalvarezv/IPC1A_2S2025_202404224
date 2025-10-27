@@ -121,7 +121,7 @@ public class CargaMasivaProductos extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         JFileChooser fileChooser = new JFileChooser();
         
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos CSV (.csv)", "csv");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos SET (.set)", "set");
         fileChooser.setFileFilter(filter);
         
         int returnValue = fileChooser.showOpenDialog(this);

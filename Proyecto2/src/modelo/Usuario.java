@@ -2,11 +2,12 @@ package modelo;
 import java.io.Serializable;
 
 public class Usuario implements Serializable {
+    private static final long serialVersionUID = 1L;
     
     private String codigo;
     private String nombre;
     private String contrasena;
-    private String genero;
+    private String genero; // <-- Debe existir aquí
     private String rol; 
        
 
@@ -18,6 +19,7 @@ public class Usuario implements Serializable {
         this.rol = rol;
     }
     
+    // Constructor de respaldo si lo usas en otros modelos (ej: Administrador)
     public Usuario(String codigo, String contrasena, String nombre, String rol) {
         this(codigo, contrasena, nombre, "Otro", rol); 
     }
@@ -50,5 +52,9 @@ public class Usuario implements Serializable {
     
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
+    }
+    
+    public void setGenero(String genero) { 
+        this.genero = genero;
     }
 }

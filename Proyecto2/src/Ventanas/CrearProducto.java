@@ -39,6 +39,8 @@ public class CrearProducto extends javax.swing.JFrame {
         jTextField3 = new javax.swing.JTextField();
         jComboBox1 = new javax.swing.JComboBox<>();
         jButton2 = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        jTextField4 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -56,6 +58,12 @@ public class CrearProducto extends javax.swing.JFrame {
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
+            }
+        });
+
+        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField1ActionPerformed(evt);
             }
         });
 
@@ -79,6 +87,14 @@ public class CrearProducto extends javax.swing.JFrame {
             }
         });
 
+        jLabel6.setText("Precio");
+
+        jTextField4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField4ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -86,7 +102,7 @@ public class CrearProducto extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(35, 52, Short.MAX_VALUE)
+                        .addGap(35, 69, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
@@ -98,11 +114,14 @@ public class CrearProducto extends javax.swing.JFrame {
                                     .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
                                     .addComponent(jTextField1)))
                             .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jButton1)
-                                    .addComponent(jLabel5))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addComponent(jButton1)
+                                        .addComponent(jLabel5))
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jButton2)))))
                     .addGroup(layout.createSequentialGroup()
@@ -135,7 +154,11 @@ public class CrearProducto extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
+                .addGap(23, 23, 23)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2))
@@ -174,16 +197,29 @@ public class CrearProducto extends javax.swing.JFrame {
     String nombre = jTextField2.getText().trim();
     String categoria = (String) jComboBox1.getSelectedItem();
     String atributoEspecifico = jTextField3.getText().trim();
+    String precioStr = jTextField4.getText().trim();
 
-
-    double precioInicial = 1.0; 
-    int stock = 0;
-
-    if (codigo.isEmpty() || nombre.isEmpty() || categoria.equals("Seleccione") || atributoEspecifico.isEmpty()) {
+    if (codigo.isEmpty() || nombre.isEmpty() || categoria.equals("Seleccione") || atributoEspecifico.isEmpty() || precioStr.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Debe seleccionar una categoría y completar todos los campos.", "Error de Validación", JOptionPane.ERROR_MESSAGE);
         return;
     }
 
+    double precioInicial;
+    try {
+        precioInicial = Double.parseDouble(precioStr);
+        if (precioInicial <= 0) {
+            JOptionPane.showMessageDialog(this, "El precio debe ser un valor numérico positivo.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "El precio debe ser un valor numérico válido (ej: 19.99).", "Error de Formato", JOptionPane.ERROR_MESSAGE);
+        logger.log(Level.WARNING, "Error al convertir precio a número.", e);
+        return;
+    }
+    
+    int stock = 0;  
+    
+    
     Producto nuevoProducto = null;
 
     if (categoria.equals("Generales")) {
@@ -192,7 +228,8 @@ public class CrearProducto extends javax.swing.JFrame {
 
     } else if (categoria.equals("Tecnología")) {
         try {
-            int garantia = Integer.parseInt(atributoEspecifico);
+            int garantia = Integer.parseInt(atributoEspecifico); 
+            // Se usa la variable 'codigo' (String)
             nuevoProducto = new Tecnologia(codigo, nombre, categoria, garantia, stock, precioInicial);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "La garantía debe ser un número entero.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
@@ -204,9 +241,10 @@ public class CrearProducto extends javax.swing.JFrame {
         String fechaCaducidad = atributoEspecifico;
         nuevoProducto = new Alimento(codigo, nombre, categoria, fechaCaducidad, stock, precioInicial);
     }
-
+    
     if (nuevoProducto != null) {
         if (ProductoController.agregarProducto(nuevoProducto)) {
+            ProductoController.guardarProductos(); 
             if (adminView != null) {
                 adminView.actualizarTablaProductos();
             }
@@ -214,11 +252,21 @@ public class CrearProducto extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Producto creado exitosamente: " + nombre, "Éxito", JOptionPane.INFORMATION_MESSAGE);
             this.dispose();
         } else {
-            JOptionPane.showMessageDialog(this, "Error: El código de producto ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error: El código de producto " + codigo + " ya existe.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+
+
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jTextField4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField4ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField4ActionPerformed
+
+    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -254,8 +302,10 @@ public class CrearProducto extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;
+    private javax.swing.JTextField jTextField4;
     // End of variables declaration//GEN-END:variables
 }

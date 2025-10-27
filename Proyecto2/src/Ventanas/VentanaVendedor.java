@@ -30,6 +30,7 @@ public class VentanaVendedor extends javax.swing.JFrame {
         this.vendedorActual = vendedor;
         this.setLocationRelativeTo(null);
         setTitle("Panel del Vendedor - " + vendedor.getNombre());
+        controlador.UsuarioController.cargarUsuarios();
         
         ProductoController.cargarProductos(); 
         PedidoController.cargarPedidos(); 
@@ -89,27 +90,29 @@ public class VentanaVendedor extends javax.swing.JFrame {
     }
 
     public void actualizarTablaClientes() {
-        DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
-        model.setRowCount(0);
+    DefaultTableModel model = (DefaultTableModel) jTable2.getModel();
+    model.setRowCount(0);
 
-        Cliente[] clientes = ClienteController.obtenerClientes(); 
+    // ⭐ 1. Llamar al controlador de Usuarios (donde reside el array estático)
+    // Asegúrate de que esta línea esté usando 'controlador.UsuarioController'
+    modelo.Cliente[] clientes = controlador.UsuarioController.obtenerClientes(); 
 
-        if (clientes == null || clientes.length == 0) {
-            System.out.println("No hay clientes cargados.");
-            return;
+    if (clientes == null || clientes.length == 0) {
+        System.out.println("No hay clientes cargados.");
+        return;
+    }
+
+    for (modelo.Cliente c : clientes) {
+        if (c != null) {
+            model.addRow(new Object[]{
+                c.getCodigo(),
+                c.getNombre(),
+                c.getGenero(),      
+                c.getCumpleanos()   
+            });
         }
-
-        for (Cliente c : clientes) {
-            if (c != null) {
-                model.addRow(new Object[]{
-                    c.getCodigo(),
-                    c.getNombre(),
-                    ClienteController.getGenero(c.getCodigo()),    
-                    ClienteController.getCumpleaños(c.getCodigo())    
-                });
-            }
-        }
-    } 
+    }
+}
             
         public void actualizarTablaPedidos() {
             DefaultTableModel model = (DefaultTableModel) jTable3.getModel();
@@ -414,24 +417,33 @@ public class VentanaVendedor extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-         JFileChooser fileChooser = new JFileChooser();
-         fileChooser.setDialogTitle("Seleccionar Archivo CSV de Productos");
-         
-         int seleccion = fileChooser.showOpenDialog(this);
-         
-         if (seleccion == JFileChooser.APPROVE_OPTION) {
-             String rutaArchivo = fileChooser.getSelectedFile().getAbsolutePath();
-             
+        javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+    fileChooser.setDialogTitle("Seleccionar Archivo CSV para Cargar Stock");
+    
+    javax.swing.filechooser.FileNameExtensionFilter filter = 
+        new javax.swing.filechooser.FileNameExtensionFilter("Archivos de Stock CSV", "csv");
+    fileChooser.setFileFilter(filter);
 
-             boolean exito = ProductoController.cargarProductosMasivo(rutaArchivo); 
-             
-             if (exito) {
-                 JOptionPane.showMessageDialog(this, "Carga masiva de productos completada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                 actualizarTablaProductos();
-             } else {
-                 JOptionPane.showMessageDialog(this, "Hubo errores durante la carga masiva. Revise la consola para más detalles.", "Error de Carga", JOptionPane.ERROR_MESSAGE);
-             }
-         }
+    int userSelection = fileChooser.showOpenDialog(this);
+
+    if (userSelection == javax.swing.JFileChooser.APPROVE_OPTION) {
+        java.io.File fileToLoad = fileChooser.getSelectedFile();
+        String rutaArchivo = fileToLoad.getAbsolutePath();
+        
+        int cargados = controlador.ProductoController.cargarStockMasivoCSV(rutaArchivo);
+        
+        if (cargados > 0) {
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                cargados + " producto(s) con stock actualizado exitosamente.", 
+                "Carga Masiva Exitosa", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            
+            actualizarTablaProductos(); 
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                "No se actualizó el stock de ningún producto. Revise el archivo CSV o la consola para errores.", 
+                "Advertencia de Carga", javax.swing.JOptionPane.WARNING_MESSAGE);
+        }
+    }
     
 
     }//GEN-LAST:event_jButton2ActionPerformed
@@ -452,8 +464,41 @@ public class VentanaVendedor extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton3ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        CargaMasivaClientes cargaClientes = new CargaMasivaClientes(this); // 'this' es la referencia a VentanaVendedor
-    cargaClientes.setVisible(true);
+    javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+    fileChooser.setDialogTitle("Seleccionar Archivo CSV de Clientes para Carga Masiva");
+    
+    javax.swing.filechooser.FileNameExtensionFilter filter = 
+        new javax.swing.filechooser.FileNameExtensionFilter("Archivos CSV", "csv");
+    fileChooser.setFileFilter(filter);
+
+    int userSelection = fileChooser.showOpenDialog(this);
+
+    if (userSelection == javax.swing.JFileChooser.APPROVE_OPTION) {
+        java.io.File fileToLoad = fileChooser.getSelectedFile();
+        String rutaArchivo = fileToLoad.getAbsolutePath();
+        
+        try {
+            int cargados = controlador.UsuarioController.cargarClientesMasivoCSV(rutaArchivo);
+            
+            if (cargados > 0) {
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                    cargados + " cliente(s) cargado(s) exitosamente desde CSV.", 
+                    "Carga Masiva Exitosa", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                
+                actualizarTablaClientes(); 
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this, 
+                    "No se cargó ningún cliente. Revise el formato del archivo.", 
+                    "Advertencia de Carga", javax.swing.JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (Exception e) {
+            logger.log(java.util.logging.Level.SEVERE, "Error al procesar el archivo CSV de Clientes.", e);
+            javax.swing.JOptionPane.showMessageDialog(this, 
+                "Ocurrió un error inesperado al procesar el archivo. Verifique la consola.", 
+                "Error Crítico de Carga", javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed

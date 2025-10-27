@@ -1,5 +1,9 @@
 package modelo;
-public class Alimento extends ProductoPrecio { 
+import java.io.Serializable;
+
+public class Alimento extends ProductoPrecio implements Serializable { 
+    private static final long serialVersionUID = 1L;
+    
     private String fechaCaducidad;
 
     public Alimento(String codigo, String nombre, String categoria, String fechaCaducidad, int stock, double precio) {
@@ -17,6 +21,14 @@ public class Alimento extends ProductoPrecio {
 
     @Override
     public String toString() {
-        return toCSV(); 
+        return "Alimento{" +
+                "codigo='" + getCodigo() + '\'' +
+                ", nombre='" + getNombre() + '\'' +
+                ", categoria='" + getCategoria() + '\'' +
+                ", material='" + getMaterial() + '\'' +
+                ", stock=" + getStock() +
+                ", precio=" + getPrecio() +
+                ", fechaCaducidad='" + fechaCaducidad + '\'' +
+                '}';
     }
 }

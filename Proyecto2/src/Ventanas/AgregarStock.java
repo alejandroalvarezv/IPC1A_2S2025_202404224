@@ -130,7 +130,7 @@ public class AgregarStock extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-    String codigo = jTextField1.getText().trim(); 
+    String codigo = jTextField1.getText().trim();
     String cantidadStr = jTextField2.getText().trim();
 
     if (codigo.isEmpty() || cantidadStr.isEmpty()) {
@@ -159,7 +159,7 @@ public class AgregarStock extends javax.swing.JFrame {
 
     int confirmacion = JOptionPane.showConfirmDialog(
         this,
-        "Añadir " + cantidadAAgregar + " unidades a: " + producto.getNombre() + ".\n¿Desea confirmar?",
+        "Añadir " + cantidadAAgregar + " unidades a: " + producto.getNombre() + " (Stock actual: " + producto.getStock() + ").\n¿Desea confirmar?",
         "Confirmar Adición de Stock",
         JOptionPane.YES_NO_OPTION,
         JOptionPane.QUESTION_MESSAGE
@@ -171,15 +171,15 @@ public class AgregarStock extends javax.swing.JFrame {
         boolean actualizado = ProductoController.actualizarProducto(producto);
 
         if (actualizado) {
-            JOptionPane.showMessageDialog(this, "Stock de " + producto.getNombre() + " actualizado correctamente.");
-
-            if (vendedorView != null) {
-                vendedorView.actualizarTablaProductos(); 
-            }
 
             Historial nuevoHistorial = new Historial(codigo, cantidadAAgregar);
             HistorialController.agregarHistorial(nuevoHistorial);
 
+            JOptionPane.showMessageDialog(this, "Stock de " + producto.getNombre() + " actualizado correctamente. Nuevo stock: " + producto.getStock(), "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+            if (vendedorView != null) {
+                vendedorView.actualizarTablaProductos();
+            }
             this.dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Error al guardar el stock del producto.", "Error Interno", JOptionPane.ERROR_MESSAGE);

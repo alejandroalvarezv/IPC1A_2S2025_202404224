@@ -36,7 +36,7 @@ public class ActualizarCliente extends javax.swing.JFrame {
         jTextField3.setEnabled(habilitar); 
         jTextField4.setEnabled(habilitar); 
         jTextField5.setEnabled(habilitar);
-        jButton2.setEnabled(habilitar);   
+        jButton2.setEnabled(habilitar);    
     }
 
     private void limpiarCamposEdicion() {
@@ -207,7 +207,6 @@ public class ActualizarCliente extends javax.swing.JFrame {
             return;
         }
 
-        controlador.UsuarioController.cargarUsuarios(); 
         Cliente cliente = ClienteController.buscarClientePorCodigo(codigo); 
 
         if (cliente != null) {
@@ -226,6 +225,8 @@ public class ActualizarCliente extends javax.swing.JFrame {
             habilitarCamposEdicion(false);
             JOptionPane.showMessageDialog(this, "Cliente con código " + codigo + " no encontrado.", "Error de Búsqueda", JOptionPane.ERROR_MESSAGE);
         }
+    
+    
     
     
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -259,7 +260,7 @@ public class ActualizarCliente extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Datos del cliente actualizados correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             
             if (this.ventanaPadre != null) {
-                this.ventanaPadre.actualizarTablaClientes();
+
             }
             
             this.dispose(); 
@@ -267,6 +268,7 @@ public class ActualizarCliente extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Error al actualizar el cliente. Revise su controlador.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    
     
     }//GEN-LAST:event_jButton2ActionPerformed
 

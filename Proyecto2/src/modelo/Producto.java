@@ -1,5 +1,9 @@
 package modelo;
-public class Producto {
+import java.io.Serializable;
+
+public class Producto implements Serializable { 
+    private static final long serialVersionUID = 1L;
+
     private String codigo;
     private String nombre;
     private String categoria;
@@ -26,16 +30,16 @@ public class Producto {
     public String getCategoria() { return categoria; }
     public String getMaterial() { return material; }
     public int getStock() { return stock; }
-    public double getPrecio() { return precio; } // 🚀 Nuevo Getter
+    public double getPrecio() { return precio; }
 
     // Setters
     public void setNombre(String nombre) { this.nombre = nombre; }
     public void setMaterial(String material) { this.material = material; }
     public void setStock(int stock) { this.stock = stock; }
-    public void setPrecio(double precio) { this.precio = precio; } // 🚀 Nuevo Setter
+    public void setPrecio(double precio) { this.precio = precio; }
 
     public String getAtributoEspecifico() {    
-        return "";    
+        return "";     
     }
 
     public String toCSVBase() {
@@ -49,7 +53,7 @@ public class Producto {
     
     public String toCSV() {
         return toCSVBase() + "," + this.precio;
-    }    
+    }     
 
     @Override
     public String toString() {

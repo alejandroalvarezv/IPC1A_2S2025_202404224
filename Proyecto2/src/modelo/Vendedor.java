@@ -1,10 +1,12 @@
 package modelo;
+import java.io.Serializable;
+
 public class Vendedor extends Usuario {
     
     private int ventasConfirmadas;
 
-    public Vendedor(String codigo, String contrasena, String nombre, String genero) {
-        super(codigo, contrasena, nombre, genero, "Vendedor"); 
+    public Vendedor(String codigo, String nombre, String genero, String contrasena) {
+        super(codigo, nombre, genero, contrasena, "Vendedor"); 
         this.ventasConfirmadas = 0;
     }
 

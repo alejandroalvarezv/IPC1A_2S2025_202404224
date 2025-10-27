@@ -1,9 +1,13 @@
 package modelo;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.time.format.DateTimeFormatter; 
+import java.time.format.DateTimeFormatter;
+import java.io.Serializable;
 
-public class Pedido {
+public class Pedido implements Serializable { // <--- CORRECCIÓN CLAVE: ¡Implementar Serializable!
+    
+    private static final long serialVersionUID = 1L; // Buena práctica de serialización
     
     private String idPedido;
     private String codigoCliente;
@@ -25,8 +29,8 @@ public class Pedido {
     
     
     public void setIdPedido(String id) {
-    this.idPedido = id;
-    }   
+        this.idPedido = id;
+    }    
 
     public Pedido(String idPedido, String codigoCliente, String descripcionItems, double total, 
                   LocalDateTime fechaCreacion, String estado) {
@@ -38,7 +42,6 @@ public class Pedido {
         this.estado = estado;
     }
     
-    // --- Getters y Setters ---
 
     public String getIdPedido() { return idPedido; }
     public String getCodigoCliente() { return codigoCliente; }

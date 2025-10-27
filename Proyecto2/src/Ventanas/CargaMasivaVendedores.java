@@ -99,7 +99,8 @@ public class CargaMasivaVendedores extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         JFileChooser fileChooser = new JFileChooser();
     
-    FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos CSV", "csv");
+ // En jButton1ActionPerformed:
+    FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos SET (.set)", "set"); // <-- CORREGIR AQUÍ
     fileChooser.setFileFilter(filter);
     
     int returnValue = fileChooser.showOpenDialog(this);
@@ -112,19 +113,22 @@ public class CargaMasivaVendedores extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
     String ruta = jTextField1.getText().trim(); 
-    
+
     if (ruta.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Debe seleccionar o ingresar la ruta del archivo CSV.", "Error de Validación", JOptionPane.WARNING_MESSAGE);
         return;
     }
     
-    UsuarioController.cargarVendedoresMasivo(ruta);
-    
-    JOptionPane.showMessageDialog(this, "Proceso de carga masiva finalizado. Revise la consola para detalles de duplicados o errores de formato.", "Carga Terminada", JOptionPane.INFORMATION_MESSAGE);
-    
-    if (adminView != null) { 
-        adminView.actualizarTablaVendedores();
+    int cargados = UsuarioController.cargarVendedoresMasivoCSV(ruta); 
 
+    if (adminView != null) {
+        JOptionPane.showMessageDialog(this, 
+                cargados + " vendedor(es) cargado(s) exitosamente.\nRevise la consola para detalles de errores/duplicados.", 
+                "Carga Terminada", JOptionPane.INFORMATION_MESSAGE);
+        
+        adminView.actualizarTablaVendedores();
+    } else {
+        JOptionPane.showMessageDialog(this, "Proceso de carga masiva finalizado.", "Carga Terminada", JOptionPane.INFORMATION_MESSAGE);
     }
     
     this.dispose(); 

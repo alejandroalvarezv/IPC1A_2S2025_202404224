@@ -10,6 +10,14 @@ import modelo.Alimento;
 import modelo.ButtonColumn;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import modelo.ReporteVentasProducto; 
+import modelo.ReporteInventario;
+import modelo.ReportePDFGenerator; 
+import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
+import java.io.File; 
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 
 public class Administrador extends javax.swing.JFrame {
 
@@ -121,6 +129,50 @@ public class Administrador extends javax.swing.JFrame {
             return "Categoría: General\nMaterial: " + producto.getMaterial();
     }
 }
+        
+        
+        
+        private void generarYGuardarReporte(Object[] data, String tipoReporte, String tituloPDF) {
+        if (data == null || data.length == 0) {
+            JOptionPane.showMessageDialog(this, "No hay datos para generar el reporte: " + tituloPDF, "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Guardar Reporte: " + tituloPDF);
+        
+        // Sugerir nombre de archivo. El generador PDF añadirá el timestamp.
+        fileChooser.setSelectedFile(new File(tipoReporte + ".pdf")); 
+
+        int seleccion = fileChooser.showSaveDialog(this);
+        
+        if (seleccion == JFileChooser.APPROVE_OPTION) {
+            String rutaBaseDirectorios = fileChooser.getSelectedFile().getParent(); 
+            
+            // Llama al método estático del ReportePDFGenerator
+            String rutaFinal = ReportePDFGenerator.generarReporte(data, tipoReporte, tituloPDF, rutaBaseDirectorios);
+            
+            if (rutaFinal != null) {
+                JOptionPane.showMessageDialog(this, 
+                        "Reporte generado con éxito en:\n" + rutaFinal, 
+                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, 
+                        "Error al generar el archivo PDF. Revise la consola.", 
+                        "Error de PDF", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+
+// --- MANEJADORES DE EVENTOS PARA BOTONES DE REPORTES (jButton10 - jButton16) ---
+
+        
+        
+        
+        
+        
+        
 
 
     
@@ -146,6 +198,12 @@ public class Administrador extends javax.swing.JFrame {
         jButton8 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jButton10 = new javax.swing.JButton();
+        jButton11 = new javax.swing.JButton();
+        jButton12 = new javax.swing.JButton();
+        jButton13 = new javax.swing.JButton();
+        jButton14 = new javax.swing.JButton();
+        jButton15 = new javax.swing.JButton();
+        jButton16 = new javax.swing.JButton();
         jButton9 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -303,22 +361,94 @@ public class Administrador extends javax.swing.JFrame {
         jTabbedPaneModulos.addTab("Productos", jPanel2);
 
         jButton10.setText("Productos mas Vendidos");
+        jButton10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton10ActionPerformed(evt);
+            }
+        });
+
+        jButton11.setText("Productos Menos Vendidos");
+        jButton11.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton11ActionPerformed(evt);
+            }
+        });
+
+        jButton12.setText("Reporte de Inventario");
+        jButton12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton12ActionPerformed(evt);
+            }
+        });
+
+        jButton13.setText("Reporte de Ventas por Vendedor");
+        jButton13.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton13ActionPerformed(evt);
+            }
+        });
+
+        jButton14.setText("Reporte de Clientes Activos");
+        jButton14.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton14ActionPerformed(evt);
+            }
+        });
+
+        jButton15.setText("Reporte Financiero");
+        jButton15.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton15ActionPerformed(evt);
+            }
+        });
+
+        jButton16.setText("Productos por Caducar");
+        jButton16.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton16ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(92, 92, 92)
-                .addComponent(jButton10)
-                .addContainerGap(604, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(166, 166, 166)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton10)
+                            .addComponent(jButton11)
+                            .addComponent(jButton12))
+                        .addGap(97, 97, 97)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton15)
+                            .addComponent(jButton14)
+                            .addComponent(jButton13)))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(310, 310, 310)
+                        .addComponent(jButton16)))
+                .addContainerGap(215, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGap(67, 67, 67)
-                .addComponent(jButton10)
-                .addContainerGap(349, Short.MAX_VALUE))
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton10)
+                    .addComponent(jButton13))
+                .addGap(42, 42, 42)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton11)
+                    .addComponent(jButton14))
+                .addGap(53, 53, 53)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton12)
+                    .addComponent(jButton15))
+                .addGap(69, 69, 69)
+                .addComponent(jButton16)
+                .addContainerGap(116, Short.MAX_VALUE))
         );
 
         jTabbedPaneModulos.addTab("Reportes", jPanel3);
@@ -358,8 +488,46 @@ public class Administrador extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        CargaMasivaVendedores CargaMasivaVendedoresWindow = new CargaMasivaVendedores(this);
-        CargaMasivaVendedoresWindow.setVisible(true);
+        javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+    fileChooser.setDialogTitle("Seleccionar Archivo CSV de Vendedores para Carga Masiva");
+    
+    // 2. Filtrar para que solo muestre archivos CSV (.csv)
+    FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos de Datos CSV", "csv");
+    fileChooser.setFileFilter(filter);
+
+    // 3. Mostrar el diálogo de apertura de archivo
+    int userSelection = fileChooser.showOpenDialog(this);
+
+    if (userSelection == javax.swing.JFileChooser.APPROVE_OPTION) {
+        // El usuario seleccionó un archivo
+        java.io.File fileToLoad = fileChooser.getSelectedFile();
+        String rutaArchivo = fileToLoad.getAbsolutePath();
+        
+        // 4. Llamar al método del controlador
+        try {
+            // Llamamos al nuevo método de carga masiva de Vendedores
+            int cargados = UsuarioController.cargarVendedoresMasivoCSV(rutaArchivo);
+            
+            // 5. Mostrar resultado y actualizar la tabla
+            if (cargados > 0) {
+                JOptionPane.showMessageDialog(this, 
+                    cargados + " vendedor(es) cargado(s) exitosamente desde CSV.", 
+                    "Carga Masiva Exitosa", JOptionPane.INFORMATION_MESSAGE);
+                
+                // Refrescar la tabla de vendedores
+                actualizarTablaVendedores(); 
+            } else {
+                JOptionPane.showMessageDialog(this, 
+                    "No se cargó ningún vendedor. Revise el formato del archivo o si los códigos ya existen/el archivo está vacío.", 
+                    "Advertencia de Carga", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error al procesar el archivo CSV de Vendedores en la interfaz: " + e.getMessage(), e);
+            JOptionPane.showMessageDialog(this, 
+                "Ocurrió un error inesperado al procesar el archivo. Verifique el formato.", 
+                "Error Crítico de Carga", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -393,8 +561,47 @@ public class Administrador extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton7ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
-        CargaMasivaProductos CargaMasivaProductosWindow = new CargaMasivaProductos(this);
-        CargaMasivaProductosWindow.setVisible(true);
+        javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
+    fileChooser.setDialogTitle("Seleccionar Archivo CSV de Productos para Carga Masiva");
+    
+    // 2. Filtrar para que solo muestre archivos CSV (.csv)
+    FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos de Datos CSV", "csv");
+    fileChooser.setFileFilter(filter);
+
+    // 3. Mostrar el diálogo de apertura de archivo
+    int userSelection = fileChooser.showOpenDialog(this);
+
+    if (userSelection == javax.swing.JFileChooser.APPROVE_OPTION) {
+        // El usuario seleccionó un archivo
+        java.io.File fileToLoad = fileChooser.getSelectedFile();
+        String rutaArchivo = fileToLoad.getAbsolutePath();
+        
+        // 4. Llamar al método del controlador
+        try {
+            // Utilizamos el método que lee el CSV e integra los productos
+            int cargados = ProductoController.cargarProductosMasivoCSV(rutaArchivo);
+            
+            // 5. Mostrar resultado y actualizar la tabla
+            if (cargados > 0) {
+                JOptionPane.showMessageDialog(this, 
+                    cargados + " producto(s) cargado(s) exitosamente desde CSV.", 
+                    "Carga Masiva Exitosa", JOptionPane.INFORMATION_MESSAGE);
+                
+                // Refrescar la tabla para que se vean los productos nuevos
+                actualizarTablaProductos(); 
+            } else {
+                JOptionPane.showMessageDialog(this, 
+                    "No se cargó ningún producto. Revise el formato del archivo o si los códigos ya existen/el archivo está vacío.", 
+                    "Advertencia de Carga", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error al procesar el archivo CSV en la interfaz: " + e.getMessage(), e);
+            JOptionPane.showMessageDialog(this, 
+                "Ocurrió un error inesperado al procesar el archivo. Verifique el formato.", 
+                "Error Crítico de Carga", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
@@ -411,6 +618,58 @@ public class Administrador extends javax.swing.JFrame {
             login.setVisible(true);
         }
     }//GEN-LAST:event_jButton9ActionPerformed
+
+    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+        Object[] data = ReporteVentasProducto.obtenerProductosMasVendidos();
+    generarYGuardarReporte(data, "ProductosMasVendidos", "Reporte: Productos Más Vendidos");
+    }//GEN-LAST:event_jButton10ActionPerformed
+
+    private void jButton11ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton11ActionPerformed
+        Object[] data = ReporteVentasProducto.obtenerProductosMenosVendidos();
+
+    // 2. Generar y Guardar el reporte
+    generarYGuardarReporte(data, "ProductosMenosVendidos", "Reporte: Productos Menos Vendidos");
+    }//GEN-LAST:event_jButton11ActionPerformed
+
+    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
+        Object[] data = ReporteInventario.obtenerReporteInventarioGeneral();
+
+    // 2. Generar y Guardar el reporte
+    generarYGuardarReporte(data, "InventarioGeneral", "Reporte de Inventario General");
+    }//GEN-LAST:event_jButton12ActionPerformed
+
+    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+        Object[] data = ReporteVentasProducto.obtenerVentasPorVendedor();
+
+    // 2. Generar y Guardar el reporte
+    generarYGuardarReporte(data, "VentasPorVendedor", "Reporte de Ventas por Vendedor");
+    }//GEN-LAST:event_jButton13ActionPerformed
+
+    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
+        Object[] data = UsuarioController.obtenerClientesActivos(); 
+
+    // 2. Generar y Guardar el reporte
+    generarYGuardarReporte(data, "ClientesActivos", "Reporte de Clientes Activos");
+    }//GEN-LAST:event_jButton14ActionPerformed
+
+    private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
+        Object[] data = new Object[]{}; // Reemplaza con el método real, ej: ReporteFinanciero.obtenerData()
+    if (data.length == 0) {
+        JOptionPane.showMessageDialog(this, "El Reporte Financiero aún no tiene datos para mostrar.", "Info", JOptionPane.INFORMATION_MESSAGE);
+        return;
+    }
+    // 2. Generar y Guardar el reporte
+    generarYGuardarReporte(data, "ReporteFinanciero", "Reporte Financiero General");
+
+    }//GEN-LAST:event_jButton15ActionPerformed
+
+    private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
+        Object[] data = ReporteInventario.obtenerProductosPorCaducar();
+
+    // 2. Generar y Guardar el reporte
+    generarYGuardarReporte(data, "ProductosPorCaducar", "Reporte: Productos por Caducar");
+
+    }//GEN-LAST:event_jButton16ActionPerformed
 
 
     public static void main(String args[]) {
@@ -437,6 +696,12 @@ public class Administrador extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
+    private javax.swing.JButton jButton11;
+    private javax.swing.JButton jButton12;
+    private javax.swing.JButton jButton13;
+    private javax.swing.JButton jButton14;
+    private javax.swing.JButton jButton15;
+    private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;

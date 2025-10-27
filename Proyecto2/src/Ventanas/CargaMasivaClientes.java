@@ -126,14 +126,15 @@ public class CargaMasivaClientes extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos CSV", "csv");
-        fileChooser.setFileFilter(filter);
+    
+    FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos SET", "set");
+    fileChooser.setFileFilter(filter);
 
-        int returnValue = fileChooser.showOpenDialog(this);
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            selectedCsvFile = fileChooser.getSelectedFile();
-            jTextField1.setText(selectedCsvFile.getAbsolutePath());
-        }
+    int returnValue = fileChooser.showOpenDialog(this);
+    if (returnValue == JFileChooser.APPROVE_OPTION) {
+        selectedCsvFile = fileChooser.getSelectedFile();
+        jTextField1.setText(selectedCsvFile.getName()); 
+    }
     
     }//GEN-LAST:event_jButton1ActionPerformed
 
